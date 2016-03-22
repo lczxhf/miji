@@ -30,8 +30,10 @@ class Api::ThirdPartyController < ApplicationController
 
 	 def auth_code 
 		puts params
+		arr = ShopSubRelation.where(shopid:params[:id]).pluck(:subid) << params[:id]
+	 	ShopMember.where(id:arr).update_all(auth:1)	
 		json=ThirdParty.authorize(params[:auth_code])
-		sangna_config = SangnaConfig.generate_config(json)
+		sangna_config = SangnaConfig.generate_config(json,params[:id])
 		#GetUserInfo.perform_async(auth_code.token,auth_code.id)
 		SangnaInfo.get_info(sangna_config.id,sangna_config.appid)
 		SangnaConfig.set_industry(sangna_config.token)

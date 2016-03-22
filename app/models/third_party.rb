@@ -20,7 +20,7 @@ class ThirdParty
 	end
 		
 	def  self.get_access_token()
-    if token=Rails.chache.read(:access_token)
+    if token=Rails.cache.read(:access_token)
     else  
 		  ticket=Rails.cache.read("ticket")
  	    url = 'https://api.weixin.qq.com/cgi-bin/component/api_component_token'

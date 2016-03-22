@@ -1,9 +1,9 @@
 class SangnaConfig < ActiveRecord::Base
-	def self.generate_config(json)
+	def self.generate_config(json,id)
 		sangna_config = SangnaConfig.find_or_initialize_by(appid:json['authorization_info']['authorizer_appid'])
 		sangna_config.token=json['authorization_info']['authorizer_access_token']
 		sangna_config.del=1
-		sangna_config.shop_id = params[:id]
+		sangna_config.shop_id = id
 		sangna_config..refresh_token=json['authorization_info']['authorizer_refresh_token']
 		# qrcode=Sangna.get_qrcode(sangna_config.token,'QR_LIMIT_SCENE',"","1")
 		# qrcode=Sangna.fetch_qrcode(qrcode['ticket'])
@@ -37,7 +37,7 @@ class SangnaConfig < ActiveRecord::Base
 		template_list = template_list['template_list'].collect {|a| a['template_id']}
 		arr = TemplateMessage.where(id:template_list).pluck(:template_number_id)
 		industry_type = 1 #桑拿会所
-		template_number = TemplateNumber.where(industry_type:industry_type).where("id not in (#{arr.join(',')})").pluck(:number)
+		template_number = TemplateNumber.where(industry_type:industry_type).not(id:arr).pluck(:number)
 		template_number.each do |number|
 			if templete_id = Sangna.add_template(token,number)['template_id']
 				t_message=TemplateMessage.new
