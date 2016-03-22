@@ -4,7 +4,12 @@ Rails.application.routes.draw do
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
-
+namespace :api do
+  get "third_party/home" => "third_party#home"
+  post "third_party/receive" => "third_party#receive"
+  get "third_party/auth_code" => "third_party#auth_code"
+  post 'message/:appid' => "message#receive"
+end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

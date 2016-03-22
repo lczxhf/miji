@@ -1,0 +1,42 @@
+class Api::ThirdPartyController < ApplicationController
+	require 'nokogiri'
+
+	def home
+		@url="https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=#{APPID}&pre_auth_code=#{Rails.cache.read(:pre_code)}&redirect_uri=http://callback.mijiclub.com/api/third_party/auth_code?id=#{params[:id]}"
+ 	 	render :home,:layout=>false
+	end
+	def receive
+		puts params
+		str = request.body.read
+		doc = Nokogiri::Slop str
+		ticket = doc.xml.Encrypt.content				
+		if ThirdParty.check_info(params[:timestamp],params[:nonce],ticket,params[:msg_signature])
+			result = ThirdParty.new.decrypt(ticket.to_s)
+			xml = Nokogiri::Slop result
+			if xml.xml.InfoType.content.to_s == 'component_verify_ticket'
+			   verify_ticket = xml.xml.ComponentVerifyTicket.content.to_s
+			   Rails.cache.write(:ticket,verify_ticket)
+			   access_token = ThirdParty.get_access_token
+			   Rails.cache.write(:pre_code,ThirdParty.get_pre_auth_code["pre_auth_code"])
+			else
+			   appid = xml.xml.AuthorizerAppid.content.to_s
+			   SangnaConfig.where(appid:appid).first.update_attribute(:del,2)
+			end
+		else
+			puts 'error'
+		end
+		render plain: 'success'
+	end
+
+	 def auth_code 
+		puts params
+		json=ThirdParty.authorize(params[:auth_code])
+		sangna_config = SangnaConfig.generate_config(json)
+		#GetUserInfo.perform_async(auth_code.token,auth_code.id)
+		SangnaInfo.get_info(sangna_config.id,sangna_config.appid)
+		SangnaConfig.set_industry(sangna_config.token)
+		SangnaConfig.add_template(sangna_config.token,sangna_config.id)
+		#SangnaConfig.set_menu(sangna_config.token)
+		redirect_to "mijiclub.com"
+ 	 end
+end
