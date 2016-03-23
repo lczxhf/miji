@@ -1,3 +1,4 @@
+module WechatReplyClass
    class Message
 
     def initialize(hash)
@@ -171,3 +172,4 @@
       @source.ThumbMediaId
     end
   end
+end

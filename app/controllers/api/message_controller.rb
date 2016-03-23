@@ -1,14 +1,12 @@
 class Api::MessageController < ApplicationController
 	require "nokogiri"
-
 	def receive
-		sangna_config = SangnaConfig.find_by_appid(params[:appid])
-		if result = ThirdParty.get_content(request.body.read)
+		if result = ThirdParty.get_content(request.body.read,params[:timestamp],params[:nonce],params[:msg_signature])
 			hash={}
-			xml.xml.css('*').each do |a|
+			result.xml.css('*').each do |a|
 			    hash[a.node_name]=a.content
 			end
-			result = CommonHandle.generate_class(hash)
+			result = WechatReplyClass::CommonHandle.generate_class(hash,params[:appid])
 			render xml: result	
 		end
 	end

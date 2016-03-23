@@ -41,6 +41,8 @@ class Sangna
 		url="https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token="+token
 		body='{"template_id_short":"'+template_number+'"}'
 		result=JSON.parse(ThirdParty.sent_to_wechat(url,body))
+		puts result
+		result
 	end
 
 	def self.set_menu(token,body)

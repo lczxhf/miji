@@ -1,11 +1,12 @@
+module WechatReplyClass
 class WText
-	include ReplyWeixinMessageHelper
-	def initialize(hash)
-      @message = Message.factory hash
+	include ReplyWeixinMessage
+	def initialize(hash,appid)
+      @weixin_message = Message.factory hash
     end
 
     def handle
-    	case @message.Content
+    	case @weixin_message.Content
     	when 'TESTCOMPONENT_MSG_TYPE_TEXT'
     		release_completely
     	else
@@ -19,6 +20,7 @@ class WText
     end
 
     def common_handle
-    	reply_text_message @message.Content
+    	reply_text_message @weixin_message.Content
     end
+end
 end

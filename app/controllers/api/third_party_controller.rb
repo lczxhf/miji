@@ -7,7 +7,7 @@ class Api::ThirdPartyController < ApplicationController
 	end
 	def receive
 		puts params
-		if result = ThirdParty.get_content(request.body.read)
+		if result = ThirdParty.get_content(request.body.read,params[:timestamp],params[:nonce],params[:msg_signature])
 			if result.xml.InfoType.content.to_s == 'component_verify_ticket'
 			   verify_ticket = result.xml.ComponentVerifyTicket.content.to_s
 			   Rails.cache.write(:ticket,verify_ticket)
@@ -26,14 +26,14 @@ class Api::ThirdPartyController < ApplicationController
 	 def auth_code 
 		puts params
 		arr = ShopSubRelation.where(shopid:params[:id]).pluck(:subid) << params[:id]
-	 	ShopMember.where(id:arr).update_all(auth:1)	
+	 	ShopMember.where(shopid:arr).update_all(auth:1)	
 		json=ThirdParty.authorize(params[:auth_code])
 		sangna_config = SangnaConfig.generate_config(json,params[:id])
 		#GetUserInfo.perform_async(auth_code.token,auth_code.id)
-		SangnaInfo.get_info(sangna_config.id,sangna_config.appid)
+		SangnaInfo.get_info(sangna_config.id,sangna_config.appid,params[:id])
 		SangnaConfig.set_industry(sangna_config.token)
 		SangnaConfig.add_template(sangna_config.token,sangna_config.id)
 		#SangnaConfig.set_menu(sangna_config.token)
-		redirect_to "mijiclub.com"
+		redirect_to "http://mijiclub.com/"
  	 end
 end

@@ -1,10 +1,10 @@
-require 'roxml'
+module WechatReplyClass
   class ReplyMessage
-		include ROXML
+	require 'roxml'
+	include ROXML
     	xml_name :xml
-
     	xml_accessor :ToUserName, :cdata   => true
-   	    xml_accessor :FromUserName, :cdata => true
+   	xml_accessor :FromUserName, :cdata => true
     	xml_reader   :CreateTime, :as => Integer
     	xml_reader   :MsgType, :cdata => true
 
@@ -193,3 +193,4 @@ require 'roxml'
       super.to_xml(:encoding => 'UTF-8', :indent => 0, :save_with => 0)
     end
   end
+end

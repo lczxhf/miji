@@ -1,5 +1,6 @@
- module ReplyWeixinMessageHelper
-	 def reply_text_message(from=nil, to=nil, content)
+module WechatReplyClass
+ module ReplyWeixinMessage
+    def reply_text_message(from=nil, to=nil, content)
       message = TextReplyMessage.new
       message.FromUserName = from || @weixin_message.ToUserName
       message.ToUserName   = to   || @weixin_message.FromUserName
@@ -111,7 +112,7 @@
 
       def encrypt_message(msg_xml)
         # 加密回复的XML
-        encrypt_xml = ThirdParty.new.encrypt(msg_xml,KEY,APPID).gsub("\n","")
+        encrypt_xml = ThirdParty.new.encrypt(msg_xml).gsub("\n","")
         # 标准的回包
         generate_encrypt_message(encrypt_xml)
       end
@@ -129,4 +130,5 @@
                        msg.TimeStamp, msg.Nonce].sort.join
         Digest::SHA1.hexdigest(sort_params)
       end
+end
 end

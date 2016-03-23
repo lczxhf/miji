@@ -1,2 +1,2 @@
 module Api::MessageHelper
-    end
+end
