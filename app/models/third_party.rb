@@ -90,13 +90,12 @@ class ThirdParty
 #                end
 #	end	
 
-  def self.get_content(str,timestamp,nonce,msg_signature)
+  def self.get_content(str)
       doc=Nokogiri::Slop str
       encrypt=doc.xml.Encrypt.content
-      if check_info(timestamp,nonce,encrypt,msg_signature)
+      if check_info(params[:timestamp],params[:nonce],encrypt,params[:msg_signature])
         result = ThirdParty.new.decrypt(encrypt)
         xml = Nokogiri::Slop result
-	puts xml
       else
         xml = nil
       end
