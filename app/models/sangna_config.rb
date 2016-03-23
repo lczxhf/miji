@@ -21,10 +21,13 @@ class SangnaConfig < ActiveRecord::Base
 		# change_qrcode(auth_code)
 	end
 
-	def self.get_sangna_config_token
-		#
-		#
-		#还没写
+	def refresh_gzh_token()
+		result = ThirdParty.refresh_gzh_token(self.appid,self.refresh_token)
+		if result['authorizer_refresh_token']
+			self.refresh_token=result['authorizer_refresh_token']
+			self.token=result['authorizer_access_token']
+			self.save
+		end
 	end
 	def self.set_industry(token)
 		 one='39'
