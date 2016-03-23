@@ -7,19 +7,14 @@ class Api::ThirdPartyController < ApplicationController
 	end
 	def receive
 		puts params
-		str = request.body.read
-		doc = Nokogiri::Slop str
-		ticket = doc.xml.Encrypt.content				
-		if ThirdParty.check_info(params[:timestamp],params[:nonce],ticket,params[:msg_signature])
-			result = ThirdParty.new.decrypt(ticket.to_s)
-			xml = Nokogiri::Slop result
-			if xml.xml.InfoType.content.to_s == 'component_verify_ticket'
-			   verify_ticket = xml.xml.ComponentVerifyTicket.content.to_s
+		if result = ThirdParty.get_content(request.body.read)
+			if result.xml.InfoType.content.to_s == 'component_verify_ticket'
+			   verify_ticket = result.xml.ComponentVerifyTicket.content.to_s
 			   Rails.cache.write(:ticket,verify_ticket)
 			   access_token = ThirdParty.get_access_token
 			   Rails.cache.write(:pre_code,ThirdParty.get_pre_auth_code["pre_auth_code"])
 			else
-			   appid = xml.xml.AuthorizerAppid.content.to_s
+			   appid = result.xml.AuthorizerAppid.content.to_s
 			   SangnaConfig.where(appid:appid).first.update_attribute(:del,2)
 			end
 		else

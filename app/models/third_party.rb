@@ -2,6 +2,7 @@ class ThirdParty
   require 'digest/sha1'
 	require 'base64' 
 	require 'net/http'
+  require 'nokogiri'
 	#@token='tiandiwang'
 	#@@appid='wx31aa7bfa0ae30872'
 	#@@appsecret='0c79e1fa963cd80cc0be99b20a18faeb'
@@ -88,6 +89,18 @@ class ThirdParty
 #                    response.body
 #                end
 #	end	
+
+  def self.get_content(str)
+      doc=Nokogiri::Slop str
+      encrypt=doc.xml.Encrypt.content
+      if check_info(params[:timestamp],params[:nonce],encrypt,params[:msg_signature])
+        result = ThirdParty.new.decrypt(encrypt)
+        xml = Nokogiri::Slop result
+      else
+        xml = nil
+      end
+      xml
+  end
 	def decrypt(text)
       		status = 200
       		text   = Base64.strict_decode64(text)

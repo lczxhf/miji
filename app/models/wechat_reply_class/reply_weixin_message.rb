@@ -1,5 +1,4 @@
- module Api::ReplyWeixinMessageHelper
-		include Api::MessagesHelper
+ module ReplyWeixinMessageHelper
 	 def reply_text_message(from=nil, to=nil, content)
       message = TextReplyMessage.new
       message.FromUserName = from || @weixin_message.ToUserName
