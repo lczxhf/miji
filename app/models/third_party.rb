@@ -72,9 +72,9 @@ class ThirdParty
   end
 
   #刷新公众号的token
-	def self.refresh_gzh_token(component_token,component_appid,authorizer_appid,authorizer_rtoken)
-		url='https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token='+component_token
-		body='{"component_appid":"'+component_appid+'","authorizer_appid":"'+authorizer_appid+'","authorizer_refresh_token":"'+authorizer_rtoken+'"}'	
+	def self.refresh_gzh_token(authorizer_appid,authorizer_rtoken)
+		url='https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token='+TOKEN
+		body='{"component_appid":"'+APPID+'","authorizer_appid":"'+authorizer_appid+'","authorizer_refresh_token":"'+authorizer_rtoken+'"}'	
 		result=sent_to_wechat(url,body)
 		puts result
 		result

@@ -27,10 +27,10 @@ class WEvent
 	   customer.sangna_config_id = sangna_config.id
 	   customer.subid = sangna_config.shop_id
 	   customer.save
-       if @weixin_message.EventKey
+       if @weixin_message.EventKey.present?
             scan
        else
-            reply_news_message(generate_article('欢迎关注','xxxxx','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/'))
+            reply_news_message([generate_article('欢迎关注','xxxxx','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/')])
        end
 	   
     end
@@ -49,8 +49,10 @@ class WEvent
     def scan
         str = @weixin_message.EventKey.delete('qrscene_')
         arr = []
-        arr << generate_article('欢迎关注','xxxxx','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/')
-        arr << generate_article('第二条','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png','http://callback.mijiclub.com/api/third_party/home')
+        arr << generate_article('我是第一条图文消息，请点击我','xxxxx','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/')
+        arr << generate_article('我是第二条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png','http://callback.mijiclub.com/api/third_party/home')
+        arr << generate_article('我是第三条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png','http://callback.mijiclub.com/api/third_party/home')
+        arr << generate_article('我是第四条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png','http://callback.mijiclub.com/api/third_party/home')
         reply_news_message(arr)
     end
 

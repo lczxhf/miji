@@ -59,17 +59,15 @@ class Sangna
 	#向微信请求生成场景二维码
 	#并返回请求结果
 	#参数: action为二维码的类型
-	def self.get_qrcode(token,action,expire="",scene_id="",scene_str="")
+	def self.get_qrcode(token,action,expire="",info)
 	url="https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token="+token
 		case action
 		when 'QR_SCENE' then
-		   body='{"expire_seconds":'+expire.to_s+', "action_name": "QR_SCENE", "action_info": {"scene": {"scene_id":'+scene_id.to_s+'}}}'
+		   body='{"expire_seconds":'+expire.to_s+', "action_name": "QR_SCENE", "action_info": {"scene": {"scene_id":'+info.to_s+'}}}'
 		when 'QR_LIMIT_SCENE' then
-		   if !scene_id.empty?
-		      body='{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id":'+scene_id+'}}}'
-		   else
-		      body='{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_str":'+scene_str+'}}}'
-		   end
+		    body='{"action_name": "QR_LIMIT_SCENE", "action_info": {"scene": {"scene_id":'+info.to_s+'}}}'
+		when 'QR_LIMIT_STR_SCENE'
+		    body='{"action_name": "QR_LIMIT_STR_SCENE", "action_info": {"scene": {"scene_str":'+info+'}}}'
 		end
      result=JSON.parse(ThirdParty.sent_to_wechat(url,body))
 		result
