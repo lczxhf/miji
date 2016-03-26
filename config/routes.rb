@@ -9,6 +9,8 @@ namespace :api do
   post "third_party/receive" => "third_party#receive"
   get "third_party/auth_code" => "third_party#auth_code"
   post 'message/:appid' => "message#receive"
+
+  get 'backrequire/get_access_token' => "backrequire#get_access_token"
 end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

@@ -49,7 +49,8 @@ class WEvent
         str = @weixin_message.EventKey.delete('qrscene_')
         arr = []
         time = Time.now.to_i
-        url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{encodeAuth(time)}&sid=#{encodeAuth(@sangna_config.shop_id)}&openid=#{@weixin_message.FromUserName}"
+	mybase64 = Mybase64.new
+        url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(@sangna_config.shop_id)}&openid=#{@weixin_message.FromUserName}"
         arr << generate_article('我是第一条图文消息，请点击我','xxxxx','http://callback.mijiclub.com/images/subscribe.png',url)
         arr << generate_article('我是第二条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png',url)
         arr << generate_article('我是第三条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png',url)

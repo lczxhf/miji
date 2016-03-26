@@ -39,9 +39,9 @@ class SangnaConfig < ActiveRecord::Base
 
 		template_list = Sangna.get_template_list(token)
 		template_list = template_list['template_list'].collect {|a| a['template_id']}
-		arr = TemplateMessage.where(id:template_list).pluck(:template_number_id)
+		arr = TemplateMessage.where(template_id:template_list).pluck(:template_number_id)
 		industry_type = 1 #桑拿会所
-		template_number = TemplateNumber.where(industry_type:industry_type).where.not(id:arr).pluck(:number)
+		template_number = TemplateNumber.where(industry_type:industry_type).where.not(number:arr).pluck(:number)
 		template_number.each do |number|
 			if templete_id = Sangna.add_template(token,number)['template_id']
 				t_message=TemplateMessage.new

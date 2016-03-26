@@ -8,7 +8,7 @@ class Mybase64
 	def encodeAuth(text)
 		time = Time.now.to_i.to_s
 		info = ''
-		encode(text).each_char {|a| info += a.ord.to_s(16)}
+		encode(text.to_s).each_char {|a| info += a.ord.to_s(16)}
 		md5 = Digest::MD5.hexdigest("Adam-#{Digest::MD5.hexdigest(info.to_s)}#{time}_authEncode")
 		result = info + time + md5
 	end
