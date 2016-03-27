@@ -1,8 +1,17 @@
 <html>
 	<head>
 		<meta charset="utf-8">
+		<%=javascript_include_tag 'jquery-2.1.0'%>
+		<%=javascript_include_tag 'jquery.cleditor.min'%>
+		<%=stylesheet_link_tag 'jquery.cleditor'%>
+		<script type="text/javascript">
+         $(document).ready(function() {
+           $("#input").cleditor();
+           
+         });
+       </script>
 	</head>
 	<body>
-		
+		<textarea id="input" nmae="content"></textarea>
 	</body>
 </html>
