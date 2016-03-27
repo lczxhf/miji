@@ -1,5 +1,5 @@
 <%=content_for :head do%>
-		<title><%=@article.title%></title>
+		<title><%=@article.shop_member.shop_profile.shopname%></title>
 <%=javascript_include_tag 'jquery-2.1.0'%>
 		<script>
 			$(function(){
@@ -10,5 +10,6 @@
 		</script>
 <%end%>
 <%content_for :body do%>
+		<h1><%=@article.title%></h1>
 		<%=raw @article.content%>
 <%end%>
