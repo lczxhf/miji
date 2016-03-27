@@ -16,7 +16,7 @@ namespace :api do
 end
 
 namespace :page do
-  resources :articles
+  resources :shop_articles
 end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

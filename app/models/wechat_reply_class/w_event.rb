@@ -58,11 +58,11 @@ class WEvent
         if shop_id
             #GetCoupon.perform_async(@weixin_message.FromUserName,str,shop_id)
             ids = ShopSubRelation.where(shopid:shop_id).pluck(:subid)
-            articles = Article.where(shop_member_id:ids,a_type:1,del:1)
-            url_article = "http://callback.mijiclub.com/page/"
+            articles = ShopArticle.where(shop_member_id:ids,a_type:1,del:1)
+            url_article = "http://callback.mijiclub.com/page/shop_articles/"
             articles.each do |article|
                 # add other articles
-                arr << generate_article(article.title,article.short_introduction,article.title_img.thumb.url,url_article+article.id.to_s)
+                arr << generate_article(article.title,article.short_introduction,article.title_img,url_article+article.id.to_s)
             end
         end
         reply_news_message(arr)

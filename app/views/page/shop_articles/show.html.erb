@@ -1,0 +1,14 @@
+<%=content_for :head do%>
+		<title><%=@article.title%></title>
+<%=javascript_include_tag 'jquery-2.1.0'%>
+		<script>
+			$(function(){
+				$('img').each(function(a){
+					this.src= this.src.replace('http://callback.mijiclub.com',"http://weixin.29mins.com");
+				})
+			})	
+		</script>
+<%end%>
+<%content_for :body do%>
+		<%=raw @article.content%>
+<%end%>
