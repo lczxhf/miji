@@ -2,8 +2,13 @@ class Api::ThirdPartyController < ApplicationController
 	require 'nokogiri'
 
 	def home
-		@url="https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=#{APPID}&pre_auth_code=#{Rails.cache.read(:pre_code)}&redirect_uri=http://callback.mijiclub.com/api/third_party/auth_code?id=#{params[:id]}"
- 	 	render :home,:layout=>false
+		shop_member = ShopMember.find(params[:id])
+		if Time.now - shop_member.expdate < 0
+			@url="https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=#{APPID}&pre_auth_code=#{Rails.cache.read(:pre_code)}&redirect_uri=http://callback.mijiclub.com/api/third_party/auth_code?id=#{params[:id]}"
+ 	 		render :home,:layout=>false
+ 	 	else
+ 	 			redirect_to "http://www.mijiclub.com/pay.html"
+ 	 	end
 	end
 	def receive
 		puts params

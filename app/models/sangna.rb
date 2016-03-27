@@ -118,11 +118,15 @@ class Sangna
 	end
 
 	#获取用户的基本信息
-	def self.get_user_info(openid,token)
+	def self.get_user_info(openid,token,json = true)
  		   url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=#{token}&openid=#{openid}&lang=zh_CN"
- 		   info=JSON.parse(ThirdParty.get_to_wechat(url))
+ 		   info=ThirdParty.get_to_wechat(url)
  		   puts info
-		   info
+ 		   if json
+ 		   		JSON.parse(info)
+ 		   else
+ 		   		info
+		   end
 	end
 
 
@@ -192,6 +196,13 @@ class Sangna
 		ThirdParty.sent_to_wechat(url,body)
 	end
 	
+	def sent_custom_message(token,openid,content)
+		url="https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token="+token
+		body='{"touser":"'+openid+'","msgtype":"text","text":{"content":"'+content+'"}}'
+		result=	JSON.parse(ThirdParty.sent_to_wechat(url,body))
+	end
+
+
 	private
 	 def self.return_url_body(by_what,token,first,type,array)
 		if by_what=='group'

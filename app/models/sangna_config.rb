@@ -1,4 +1,5 @@
 class SangnaConfig < ActiveRecord::Base
+	has_many :customer_lists
 	def self.generate_config(json,id)
 		sangna_config = SangnaConfig.find_or_initialize_by(appid:json['authorization_info']['authorizer_appid'])
 		sangna_config.token=json['authorization_info']['authorizer_access_token']

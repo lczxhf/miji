@@ -30,7 +30,7 @@ class WEvent
        if @weixin_message.EventKey.present?
             scan
        else
-            reply_news_message([generate_article('欢迎关注','xxxxx','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/')])
+            reply_news_message([generate_article('谢谢您的关注','点击查看详情','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/')])
        end
 	   
     end
@@ -46,15 +46,25 @@ class WEvent
     end
 
     def scan
+        
         str = @weixin_message.EventKey.delete('qrscene_')
+
         arr = []
         time = Time.now.to_i
-	mybase64 = Mybase64.new
-        url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(@sangna_config.shop_id)}&openid=#{@weixin_message.FromUserName}"
-        arr << generate_article('我是第一条图文消息，请点击我','xxxxx','http://callback.mijiclub.com/images/subscribe.png',url)
-        arr << generate_article('我是第二条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png',url)
-        arr << generate_article('我是第三条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png',url)
-        arr << generate_article('我是第四条图文消息，请点击我','aaaaaaa','http://callback.mijiclub.com/images/Meinv.png',url)
+	    mybase64 = Mybase64.new
+        url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(str)}&openid=#{@weixin_message.FromUserName}"
+        arr << generate_article('欢迎您！点击查看WIFI密码','查看店内信息 获取优惠券','http://callback.mijiclub.com/images/subscribe.png',url)
+        shop_id = ShopSubRelation.where(subid:str).pluck(:shopid).first
+        if shop_id
+            #GetCoupon.perform_async(@weixin_message.FromUserName,str,shop_id)
+            ids = ShopSubRelation.where(shopid:shop_id).pluck(:subid)
+            articles = Article.where(shop_member_id:ids,a_type:1,del:1)
+            url_article = "http://callback.mijiclub.com/page/"
+            articles.each do |article|
+                # add other articles
+                arr << generate_article(article.title,article.short_introduction,article.title_img.thumb.url,url_article+article.id.to_s)
+            end
+        end
         reply_news_message(arr)
     end
 
