@@ -73,12 +73,11 @@ class ThirdParty
 
   #刷新公众号的token
 	def self.refresh_gzh_token(authorizer_appid,authorizer_rtoken)
-    url = "https://api.weixin.qq.com/sns/oauth2/component/refresh_token?appid=#{authorizer_appid}&grant_type=refresh_token&component_appid=#{APPID}&component_access_token=#{get_access_token}&refresh_token=#{authorizer_rtoken}"
-		#url='https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token='+TOKEN
-		#body='{"component_appid":"'+APPID+'","authorizer_appid":"'+authorizer_appid+'","authorizer_refresh_token":"'+authorizer_rtoken+'"}'	
-		result=get_to_wechat(url)
+		url='https://api.weixin.qq.com/cgi-bin/component/api_authorizer_token?component_access_token='+get_access_token
+		body='{"component_appid":"'+APPID+'","authorizer_appid":"'+authorizer_appid+'","authorizer_refresh_token":"'+authorizer_rtoken+'"}'	
+		result=sent_to_wechat(url,body)
 		puts result
-		result
+		JSON.parse(result)
 	end
 #	def self.get_pre_auth_code(token)
 #		uri = URI('https://api.weixin.qq.com/cgi-bin/component/api_create_preauthcode?component_access_token='+token)
