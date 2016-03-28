@@ -36,9 +36,14 @@ class Api::ThirdPartyController < ApplicationController
 		sangna_config = SangnaConfig.generate_config(json,params[:id])
 		#GetUserInfo.perform_async(auth_code.token,auth_code.id)
 		SangnaInfo.get_info(sangna_config.id,sangna_config.appid,params[:id])
-		SangnaConfig.set_industry(sangna_config.token)
-		SangnaConfig.add_template(sangna_config.token,sangna_config.id)
-		#SangnaConfig.set_menu(sangna_config.token)
+		sangna_config.set_industry()
+		sangna_config.add_template()
+		sangna_config.set_menu()
 		redirect_to "http://mijiclub.com/"
  	 end
+
+
+	def oauth2
+		redirect_to "http://mijiclub.com/detail.php?code=#{params[:code]}&state=#{params[:state]}&appid=#{params[:appid]}"
+	end
 end

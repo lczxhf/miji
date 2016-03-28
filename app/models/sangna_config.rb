@@ -30,24 +30,24 @@ class SangnaConfig < ActiveRecord::Base
 			self.save
 		end
 	end
-	def self.set_industry(token)
+	def set_industry()
 		 one='39'
       	 two='24'
-      	 Sangna.set_industry(token,one,two)
+      	 Sangna.set_industry(self.token,one,two)
 	end
 
-	def self.add_template(token,id)
+	def add_template()
 
-		template_list = Sangna.get_template_list(token)
+		template_list = Sangna.get_template_list(self.token)
 		template_list = template_list['template_list'].collect {|a| a['template_id']}
 		arr = TemplateMessage.where(template_id:template_list).pluck(:template_number_id)
 		industry_type = 1 #桑拿会所
 		template_number = TemplateNumber.where(industry_type:industry_type).where.not(number:arr).pluck(:number)
 		template_number.each do |number|
-			if templete_id = Sangna.add_template(token,number)['template_id']
+			if templete_id = Sangna.add_template(self.token,number)['template_id']
 				t_message=TemplateMessage.new
       			t_message.template_id=templete_id
-      			t_message.sangna_config_id=id
+      			t_message.sangna_config_id= self.id
       			t_message.template_number_id=number
       			t_message.save!
 			end
@@ -55,9 +55,9 @@ class SangnaConfig < ActiveRecord::Base
 		
 	end
 
-	def self.set_menu(token)
-		body=""
-		Sangna.set_menu(token,body)
+	def set_menu()
+		body='{"button":[{"name":"我的","sub_button":[{"type":"view","name":"我的卡券","url":"https://open.weixin.qq.com/connect/oauth2/authorize?appid='+self.appid+'&redirect_uri=http%3a%2f%2fcallback.mijiclub.com%2fapi%2fthird_party%2foauth2&response_type=code&scope=snsapi_base&state=123&component_appid='+APPID+'#wechat_redirect"},{"type":"view","name":"了解觅技","url":"http://mijiclub.com"}]},{"type":"scancode_push","name":"到场扫码","key":"rselfmenu_0_1"},{"type":"view","name":"商家登录","url":"http://mijiclub.com/weixin/Writeoff-page/businessOperation.html"}]}'
+		Sangna.set_menu(self.token,body)
 	end
 	
 	def change_qrcode(sangna_config)

@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
   # The priority is based upon order of creation: first created -> highest priority.
+   require 'sidekiq/web'
+      require 'sidetiq/web'
+         mount Sidekiq::Web => '/sidekiq'
   # See how all your routes lay out with "rake routes".
 	mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   # You can have the root of your site routed with "root"
@@ -8,6 +11,7 @@ namespace :api do
   get "third_party/home" => "third_party#home"
   post "third_party/receive" => "third_party#receive"
   get "third_party/auth_code" => "third_party#auth_code"
+  get "third_party/oauth2" => "third_party#oauth2"
   post 'message/:appid' => "message#receive"
 
   post 'backrequire/get_user_info' => 'backrequire#get_user_info'

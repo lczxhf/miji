@@ -56,7 +56,7 @@ class WEvent
         arr << generate_article('欢迎您！点击查看WIFI密码','查看店内信息 获取优惠券','http://callback.mijiclub.com/images/subscribe.png',url)
         shop_id = ShopSubRelation.where(subid:str).pluck(:shopid).first
         if shop_id
-            #GetCoupon.perform_async(@weixin_message.FromUserName,str,shop_id)
+            GetCoupon.perform_async(@weixin_message.FromUserName,str,shop_id)
             ids = ShopSubRelation.where(shopid:shop_id).pluck(:subid)
             articles = ShopArticle.where(shop_member_id:ids,a_type:1,del:1)
             url_article = "http://callback.mijiclub.com/page/shop_articles/"
