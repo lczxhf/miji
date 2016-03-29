@@ -1,5 +1,25 @@
 <%content_for :head do%>
 <%=javascript_include_tag 'jquery-2.1.0'%>
+<%=javascript_include_tag 'jquery.cleditor.min'%>
+<%=stylesheet_link_tag 'jquery.cleditor'%>
+<script type="text/javascript">
+	$(function(){
+		$('#content').cleditor();
+	})
+</script>
 <%end%>
 <%content_for :body do%>
+<table>
+    <tr>
+    <th>标题</th>
+    <th>店名</th>
+    <th>主图</th>
+    <th>介绍</th>
+    </tr>
+    <tr><td><input id='title' type='text' /></td>
+    <td><input id='shop_name' type='text' /></td>
+    <td><input id='title_img' type='text' /></td>
+    <td><input id='short_introduction' type='text' /></td></tr>
+    </table>
+	<textarea id='content' name='content'></textarea>
 <%end%>
