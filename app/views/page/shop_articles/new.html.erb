@@ -6,7 +6,9 @@
 	$(function(){
 		$('#content').cleditor();
 		$("#img").on('change','input[type=file]',function(e){
-			upload_img("/api/wechat/upload_new_img")
+			upload_img(e,"/api/wechat/upload_news_img",$(this),function(input,rs){
+				input.parent().append("<span>"+rs.responseText+"</span>");	
+			})
 		})
 
 		$("#submit").click(function(){
@@ -14,22 +16,24 @@
 			var author = $("#author").val();
 			var media_id = $("#media_id").val();
 			var digest = $("#digest").val();
-			var content = $('#content').html();
-			var shop_name = $($("#shop_name option[select=select]")[0]).val();
-			$.post("/api/wechat/upload_new_media",{title:title,author:author,media_id:media_id,digest:digest,content:content,shop_name:shop_name,appid:'<%=@appid%>',is_cover:0,url:'http://mijiclub.com'},function(obj){
-						alert(obj['msg'])
-			},'json')
+			var content = $('#content').val();
+			var shopid = $("#shop_name option:selected").val();
+			$.post("/api/wechat/upload_new_media",{title:title,author:author,media_id:media_id,digest:digest,content:content,shopid:shopid,appid:'<%=@appid%>',is_cover:'0',url:'http://mijiclub.com'},function(obj){
+						alert(obj);
+			})
 		})
 
-		$('#media_id').change(function(){
-			upload_img("/api/wechat/upload_image_media")
+		$('#main_media').change(function(e){
+			upload_img(e,"/api/wechat/upload_image_media",$(this),function(input,rs){
+				$("#media_id").val(rs.responseText);
+			})
 		})
 	})
 
-	function upload_img(origin_url){
+	function upload_img(e,origin_url,input,callback){
 		var file = e.target.files[0]
-			var input = $(this)
 			input.siblings('img').remove()
+			input.siblings('span').remove()
 			var img_size = file.size/1024
 			if(file && img_size<1024){
 				var reader = new FileReader();
@@ -42,9 +46,9 @@
 				form.append('appid','<%=@appid%>');  
 				var xhr = new XMLHttpRequest();
 				xhr.open("post",origin_url, true);
-			 	xhr.onload = function () {
-                		alert(xhr.responseText);
-            	};
+			 	xhr.onload = function(){
+				  callback(input,xhr);
+				}
 			 	xhr.send(form);
 				}
 	}
@@ -54,6 +58,7 @@
 </script>
 <%end%>
 <%content_for :body do%>
+<input type='hidden' id='media_id' value="0" />
 <table>
     <tr>
     <th>标题</th>
@@ -70,7 +75,7 @@
     <td><input id='author' type='text' /></td>
     <td><input id='digest' type='text' /></td></tr>
     </table>
-    <table ><tr><th>主图</th><td><input  id="media_id" type='file'/></td></tr></table>
+    <table ><tr><th>主图</th><td><input  id="main_media" type='file'/></td></tr></table>
 	<table id='img'><tr><th>图片</th><td><input  type='file'/></td></tr></table>
 	<button onclick='add_img_tr()'>添加多一行</button>
 	<textarea id='content' name='content'></textarea>

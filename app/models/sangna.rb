@@ -151,7 +151,7 @@ class Sangna
 		url='https://api.weixin.qq.com/cgi-bin/material/add_news?access_token='+token
 		body='{"articles":['
 		array.each do |content|
-		body+='{"title":"'+content['title']+'","thumb_media_id":"'+content['media_id']+'","author":"'+content['author']+'","digest":"'+content['digest']+'","show_cover_pic":"'+content['is_cover']+'","content":"'+content['content']+'","content_source_url":"'+content['url']+'"},'
+		body+=%{{"title":"#{content["title"]}","thumb_media_id":"#{content["media_id"]}","author":"#{content["author"]}","digest":"#{content["digest"]}","show_cover_pic":"#{content["is_cover"]}","content":"#{content["content"].gsub('"','\"')}","content_source_url":"#{content["url"]}"},}
 		end
 		body=body[0...body.length-1]+']}'
 		ThirdParty.sent_to_wechat(url,body)
@@ -160,7 +160,7 @@ class Sangna
 	#根据media_id更新media
 	def self.update_news(token,media_id,index,hash)
 		url='https://api.weixin.qq.com/cgi-bin/material/update_news?access_token='+token
-		body='{"media_id":"'+media_id+'","index":"'+index+'","articles":{"title":"'+hash['title']+'","thumb_media_id":"'+hash['media_id']+'","author":"'+hash['author']+'","digest":"'+hash['digest']+'","show_cover_pic":"'+hash['is_cover']+'","content":"'+hash['content']+'","content_source_url":"'+hash['url']+'"}}'
+		body=%{{"media_id":"#{media_id}","index":"#{index}","articles":{"title":"#{hash['title']}","thumb_media_id":"#{hash['media_id']}","author":"#{hash['author']}","digest":"#{hash['digest']}","show_cover_pic":"#{hash['is_cover']}","content":"#{hash['content'].gsub('"','\"')}","content_source_url":"#{hash['url']}"}}}
 		ThirdParty.sent_to_wechat(url,body)
 	end
 	
