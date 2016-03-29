@@ -5,7 +5,34 @@
 <script type="text/javascript">
 	$(function(){
 		$('#content').cleditor();
+		$("#img").on('change','input[type=file]',function(e){
+			var file = e.target.files[0]
+			var input = $(this)
+			input.siblings('img').remove()
+			var img_size = file.size/1024
+			if(file && img_size<2048){
+				var reader = new FileReader();
+				reader.onload=function(){
+					input.after('<img src="'+reader.result+'" style="width:200px;height:200px;" />')
+				}
+			reader.readAsDataURL(file);
+			 var form = new FormData();
+			form.append('file',file);  
+			form.append('appid','<%=@appid%>');  
+			var xhr = new XMLHttpRequest();
+			xhr.open("post",'/api/wechat/upload_image_media', true);
+			 xhr.onload = function () {
+                		alert(xhr.responseText['msg']);
+            		};
+			 xhr.send(form);
+
+			}
+		})
 	})
+
+	function add_img_tr(){
+		$('#img').append('<tr><th>图片</th><td><input  type="file"/></td></tr><')
+	}
 </script>
 <%end%>
 <%content_for :body do%>
@@ -13,13 +40,17 @@
     <tr>
     <th>标题</th>
     <th>店名</th>
+    <th>作者</th>
     <th>主图</th>
     <th>介绍</th>
     </tr>
     <tr><td><input id='title' type='text' /></td>
     <td><input id='shop_name' type='text' /></td>
+    <td><input id='author' type='text' /></td>
     <td><input id='title_img' type='text' /></td>
     <td><input id='short_introduction' type='text' /></td></tr>
     </table>
+	<table id='img'><tr><th>图片</th><td><input  type='file'/></td></tr></table>
+	<button onclick='add_img_tr()'>添加多一行</button>
 	<textarea id='content' name='content'></textarea>
 <%end%>

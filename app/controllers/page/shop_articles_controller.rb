@@ -5,6 +5,9 @@ class Page::ShopArticlesController < ApplicationController
 
 	def new
 		@article = ShopArticle.new
+		ids = ShopSubRelation.where(shopid:params[:shopid]).pluck(:subid)
+		@shop = ShopProfile.where(shopid:ids).pluck(:shopid,:shopname)
+		@appid = SangnaConfig.where(shop_id:params[:shopid]).pluck(:appid).first
 	end
 
 	def create

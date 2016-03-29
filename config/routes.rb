@@ -17,6 +17,9 @@ namespace :api do
   post 'backrequire/get_user_info' => 'backrequire#get_user_info'
 
   post 'backrequire/get_access_token' => "backrequire#get_access_token"
+
+  post "wechat/upload_new_media" => "wechat#upload_new_media"
+  post "wechat/upload_image_media" => "wechat#upload_image_media"
 end
 
 namespace :page do
