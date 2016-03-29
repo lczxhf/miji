@@ -117,6 +117,14 @@ class Sangna
                 end
 	end
 
+	def self.upload_news_img(token,media,name)
+		url = URI.parse("https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token="+token)
+		req = Net::HTTP::Post::Multipart.new url,"media" => UploadIO.new(media,name)
+		res = Net::HTTP.start(url.host, url.port,:use_ssl => url.scheme == 'https') do |http|
+                http.request(req).body        
+        end
+	end
+
 	#获取用户的基本信息
 	def self.get_user_info(openid,token,json = true)
  		   url="https://api.weixin.qq.com/cgi-bin/user/info?access_token=#{token}&openid=#{openid}&lang=zh_CN"

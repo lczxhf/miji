@@ -6,30 +6,48 @@
 	$(function(){
 		$('#content').cleditor();
 		$("#img").on('change','input[type=file]',function(e){
-			var file = e.target.files[0]
+			upload_img("/api/wechat/upload_new_img")
+		})
+
+		$("#submit").click(function(){
+			var title = $('#title').val();
+			var author = $("#author").val();
+			var media_id = $("#media_id").val();
+			var digest = $("#digest").val();
+			var content = $('#content').html();
+			var shop_name = $($("#shop_name option[select=select]")[0]).val();
+			$.post("/api/wechat/upload_new_media",{title:title,author:author,media_id:media_id,digest:digest,content:content,shop_name:shop_name,appid:'<%=@appid%>',is_cover:0,url:'http://mijiclub.com'},function(obj){
+						alert(obj['msg'])
+			},'json')
+		})
+
+		$('#media_id').change(function(){
+			upload_img("/api/wechat/upload_image_media")
+		})
+	})
+
+	function upload_img(origin_url){
+		var file = e.target.files[0]
 			var input = $(this)
 			input.siblings('img').remove()
 			var img_size = file.size/1024
-			if(file && img_size<2048){
+			if(file && img_size<1024){
 				var reader = new FileReader();
 				reader.onload=function(){
 					input.after('<img src="'+reader.result+'" style="width:200px;height:200px;" />')
 				}
-			reader.readAsDataURL(file);
-			 var form = new FormData();
-			form.append('file',file);  
-			form.append('appid','<%=@appid%>');  
-			var xhr = new XMLHttpRequest();
-			xhr.open("post",'/api/wechat/upload_image_media', true);
-			 xhr.onload = function () {
-                		alert(xhr.responseText['msg']);
-            		};
-			 xhr.send(form);
-
-			}
-		})
-	})
-
+				reader.readAsDataURL(file);
+			 	var form = new FormData();
+				form.append('file',file);  
+				form.append('appid','<%=@appid%>');  
+				var xhr = new XMLHttpRequest();
+				xhr.open("post",origin_url, true);
+			 	xhr.onload = function () {
+                		alert(xhr.responseText);
+            	};
+			 	xhr.send(form);
+				}
+	}
 	function add_img_tr(){
 		$('#img').append('<tr><th>图片</th><td><input  type="file"/></td></tr><')
 	}
@@ -41,16 +59,20 @@
     <th>标题</th>
     <th>店名</th>
     <th>作者</th>
-    <th>主图</th>
     <th>介绍</th>
     </tr>
     <tr><td><input id='title' type='text' /></td>
-    <td><input id='shop_name' type='text' /></td>
+    <td><select id='shop_name'name='shop_name'>
+    	<%@shop.each do |shop|%>
+    		<option value='<%=shop[0]%>'><%=shop[1]%></option>
+    	<%end%>
+    </select></td>
     <td><input id='author' type='text' /></td>
-    <td><input id='title_img' type='text' /></td>
-    <td><input id='short_introduction' type='text' /></td></tr>
+    <td><input id='digest' type='text' /></td></tr>
     </table>
+    <table ><tr><th>主图</th><td><input  id="media_id" type='file'/></td></tr></table>
 	<table id='img'><tr><th>图片</th><td><input  type='file'/></td></tr></table>
 	<button onclick='add_img_tr()'>添加多一行</button>
 	<textarea id='content' name='content'></textarea>
+	<button id='submit'>提交图文</button>
 <%end%>

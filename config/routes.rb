@@ -20,6 +20,7 @@ namespace :api do
 
   post "wechat/upload_new_media" => "wechat#upload_new_media"
   post "wechat/upload_image_media" => "wechat#upload_image_media"
+    post "wechat/upload_news_img" => "wechat#upload_news_img"
 end
 
 namespace :page do
