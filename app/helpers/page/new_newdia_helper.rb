@@ -1,0 +1,2 @@
+module Page::NewNewdiaHelper
+end

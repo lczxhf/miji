@@ -25,6 +25,9 @@ end
 
 namespace :page do
   resources :shop_articles
+  resources :new_media
+  resources :content_media
+  resources :media
 end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
