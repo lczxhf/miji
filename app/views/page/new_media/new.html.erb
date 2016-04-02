@@ -18,6 +18,8 @@
            }
          </style>
          <script type="text/javascript">
+           var img_page = 1;
+           var main_img_page = 1;
             $(function(){
                $('#content').cleditor();
                $('#show_main_img_box').click(function(){
@@ -27,10 +29,6 @@
                 $('#show_img_box').click(function(){
                   show_hide_main_img_side('hidden')
                   show_hide_img_side('show')
-               })
-               $('body').scroll(function(){
-                  alert(123)
-                  $("#side_box").css("top", $(document).scrollTop()+20 );
                })
                 $("#submit_news").click(function(){
                           var title = trim($('#title').val());
@@ -174,35 +172,67 @@
             }
             function show_hide_img_side(type){
               if(type=='show'){
-		if($("#img_side img").size()==0){
-		    $.get("/page/content_media?page=1&all=new_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
-		        for(x in obj){
-		         $($("#img_side").children()[0]).after('<div class="row"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+obj[x]['wechat_url']+'</p></div></div>')
-			}
-		    },'json')
-		}
-                $("#img_side").removeClass("hidden");
+		              if($("#img_side img").size()==0){
+		                 show_page_img(1)
+		              }
+                  $("#img_side").removeClass("hidden");
               }else{
                 $("#img_side").addClass("hidden");
-              }
-                
-              
+              }   
             }
 
             function show_hide_main_img_side(type){
                 if(type=='show'){
                      if($("#main_img_side img").size()==0){
-		        $.get("/page/media?page=1&m_type=news_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
-		            for(x in obj){
-		             $($("#main_img_side").children()[0]).after('<div class="row"><div class="col-lg-12"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive" target="'+obj[x]['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')
-			    }
-		        },'json')
-		     }
-		     $("#main_img_side").removeClass("hidden");
+		                    show_page_main_img(1)
+		                  }
+		                  $("#main_img_side").removeClass("hidden");
                 }else{
                   $("#main_img_side").addClass("hidden");
                 }
-                
+            }
+
+            function show_page_img(page){
+              if(page==0){
+                page = img_page + 1;
+              }else if(page==-1){
+                page = img_page - 1;
+              }
+              $.get("/page/content_media?page="+page+"&all=new_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
+                          $("#img_side img").remove();
+                          for(x in obj){
+                            $($("#img_side").children()[0]).after('<div class="row"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+obj[x]['wechat_url']+'</p></div></div>')
+                           }
+                           $("#img_pagination").children().removeClass("disabled")
+                           if(page==1){
+                              $("#img_pagination").children().first().addClass("disabled")
+                           }
+                           if(page==<%=@page[1]%>){
+                              $("#img_pagination").children().last().addClass("disabled")
+                           }
+                           $("#img_pagination").children().eq(page).addClass("disabled")
+              },'json')
+            }
+            function show_page_main_img(page){
+              if(page==0){
+                page = main_img_page + 1;
+              }else if(page==-1){
+                page = main_img_page - 1;
+              }
+              $.get("/page/media?page="+page+"&m_type=news_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
+                            ("#main_img_side img").remove();
+                            for(x in obj){
+                                $($("#main_img_side").children()[0]).after('<div class="row"><div class="col-lg-12"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive" target="'+obj[x]['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')
+                             }
+                             $("#main_img_pagination").children().removeClass("disabled")
+                             if(page==1){
+                              $("#main_img_pagination").children().first().addClass("disabled")
+                           }
+                           if(page==<%=@page[0]%>){
+                              $("#main_img_pagination").children().last().addClass("disabled")
+                           }
+                           $("#main_img_pagination").children().eq(page).addClass("disabled")
+               },'json')
             }
             function choose_main_img(obj){
                 var img = $(obj).prev()
@@ -219,7 +249,7 @@
          <div class="well">
            <div class="panel">
             <ul class="nav nav-tabs bg-info">
-              <li class=""><a href="#"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
+              <li class=""><a href="/page/new_media"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
               <li class="active"><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
             </ul>
             </div>
@@ -316,13 +346,13 @@
                 <p class="text-justify">wwwwasdasdasdasdasdsadnaskdnaskdnaskdnsakdasndkas</p>
             </div>
         </div> -->
-        <ul class="pagination">
-          <li class="disabled"><a href="#">&laquo;</a></li>
-          <li class="disabled"><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">4</a></li>
-          <li><a href="#">&raquo;</a></li>
+        <ul class="pagination" id="img_pagination">
+          <li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(-1)">&laquo;</a></li>
+          <li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(1)">1</a></li>
+          <%(@page[1]-1).times.each do |num|%>
+              <li><a href="javascript:void(0)" onclick="show_page_img(<%=num+2%>)"><%=num+2%></a></li>
+          <%end%>
+          <li><a href="javascript:void(0)" onclick="show_page_img(0)">&raquo;</a></li>
         </ul>
          <div class="row">
             <div class="col-lg-12">
@@ -347,13 +377,13 @@
                 <button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button>
             </div>
         </div>  -->
-        <ul class="pagination">
-          <li class="disabled"><a href="#">&laquo;</a></li>
-          <li class="disabled"><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">4</a></li>
-          <li><a href="#">&raquo;</a></li>
+        <ul class="pagination" id="main_img_pagination">
+          <li class="disabled"><a href="javascript:void(0)" onclick="show_page_main_img(-1)">&laquo;</a></li>
+          <li class="disabled"><a href="javascript:void(0)" onclick="show_page_main_img(1)">1</a></li>
+          <%(@page[0]-1).times.each do |num|%>
+              <li><a href="javascript:void(0)" onclick="show_page_main_img(<%=num+2%>)"><%=num+2%></a></li>
+          <%end%>
+          <li><a href="javascript:void(0)" onclick="show_page_main_img(0)">&raquo;</a></li>
         </ul>
          <div class="row">
             <div class="col-lg-12">

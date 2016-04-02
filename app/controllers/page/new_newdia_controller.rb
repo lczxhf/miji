@@ -4,6 +4,8 @@ class Page::NewMediaController< ApplicationController
 		ids = ShopSubRelation.where(shopid:params[:shopid],freeze:0).pluck(:subid)
 		@shop = ShopProfile.where(shopid:ids).pluck(:shopid,:shopname)
 		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
+		@page = [Media.where(del:1,sangna_config_id:@sangna_config[0]).count,ContentMedia.where(del:1,sangna_config_id:@sangna_config[0]).count]
+		@page.collect! {|a| (a/5.0).round}
 	end
 
 	def create
