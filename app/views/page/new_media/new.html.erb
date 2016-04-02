@@ -59,9 +59,12 @@
                     file = $("#img_file").prop("files")[0]
                     if (file.size/1024 < 2048){
                         upload_img(file,"/page/content_media",function(rs){
-			   	$("#add_img_url").html(rs.responseText);
-				if(rs.responseText=="添加失败！"){
-					$($("#add_img_success_alert").children()[1]).html(rs.responseText)
+				result = JSON.parse(rs.responseText)
+				if(result['errCode']=="0"){
+					$($("#add_img_success_alert").children()[1]).html(result['errMsg'])
+				}else{
+			   		$("#add_img_url").html(result['wechat_url']);
+                             		$("#img_side").children(':first').after('<div class="row lzh"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+result['local_url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+result['wechat_url']+'</p></div></div>')
 				}
                             	$("#add_img_success_alert").removeClass("hide");
                          })
@@ -81,7 +84,8 @@
 				$("#main_img_preview").attr("src",result["url"])
                                 $("#main_img_ok").removeClass('hidden')
                                 $("#main_img_non").addClass("hidden")
-                                $("#media_id").val(result['media_id'])
+    				$("#media_id").val(result['media_id'])
+                                $("#main_img_side").children(':first').after('<div class="row lzh"><div class="col-lg-12"><img src="'+result['url']+'" class="img-thumbnail img-responsive" target="'+result['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')
 			      }
                               $("#add_main_img_success_alert").removeClass("hide");
                         })
@@ -199,9 +203,9 @@
                 page = img_page - 1;
               }
               $.get("/page/content_media?page="+page+"&all=new_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
-                          $("#img_side img").remove();
+                          $("#img_side .lzh").remove();
                           for(x in obj){
-                            $($("#img_side").children()[0]).after('<div class="row"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+obj[x]['wechat_url']+'</p></div></div>')
+                            $("#img_side").children('ul').before('<div class="row lzh"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+obj[x]['wechat_url']+'</p></div></div>')
                            }
                            $("#img_pagination").children().removeClass("disabled")
                            if(page==1){
@@ -211,6 +215,7 @@
                               $("#img_pagination").children().last().addClass("disabled")
                            }
                            $("#img_pagination").children().eq(page).addClass("disabled")
+			   img_page = page
               },'json')
             }
             function show_page_main_img(page){
@@ -220,9 +225,9 @@
                 page = main_img_page - 1;
               }
               $.get("/page/media?page="+page+"&m_type=news_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
-                            ("#main_img_side img").remove();
+                            $("#main_img_side .lzh").remove();
                             for(x in obj){
-                                $($("#main_img_side").children()[0]).after('<div class="row"><div class="col-lg-12"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive" target="'+obj[x]['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')
+                                $("#main_img_side").children('ul').before('<div class="row lzh"><div class="col-lg-12"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive" target="'+obj[x]['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')
                              }
                              $("#main_img_pagination").children().removeClass("disabled")
                              if(page==1){
@@ -232,6 +237,7 @@
                               $("#main_img_pagination").children().last().addClass("disabled")
                            }
                            $("#main_img_pagination").children().eq(page).addClass("disabled")
+		           main_img_page = page;
                },'json')
             }
             function choose_main_img(obj){

@@ -20,9 +20,9 @@ class Page::MediaController < ApplicationController
 
 	def index
 		if params[:m_type] == "all"
-		media = Media.where(sangna_config_id:params[:sangna_config_id]).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:media_id,:id)	
+		media = Media.where(sangna_config_id:params[:sangna_config_id]).order(updated_at: :desc).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:media_id,:id)	
 		else
-		media =	Media.where(sangna_config_id:params[:sangna_config_id],del:1).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:media_id,:id)	
+		media =	Media.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:media_id,:id)	
 		end
 		render plain: media.to_json
 	end
