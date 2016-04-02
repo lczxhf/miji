@@ -1,5 +1,8 @@
 class SangnaConfig < ActiveRecord::Base
 	has_many :customer_lists
+
+	after_find :check_token_expire
+
 	def self.generate_config(json,id)
 		sangna_config = SangnaConfig.find_or_initialize_by(appid:json['authorization_info']['authorizer_appid'])
 		sangna_config.token=json['authorization_info']['authorizer_access_token']
@@ -80,5 +83,15 @@ class SangnaConfig < ActiveRecord::Base
 							convert << '-composite'
 							convert << Rails.root.to_s+'/public'+sangna_config.qr_code.url
 				end
+	end
+
+
+	private
+	
+	def check_token_expire
+		if Time.now - self.updated_at > 4500
+			puts 'access_token invaild'
+			self.refresh_gzh_token
+	 	end
 	end
 end

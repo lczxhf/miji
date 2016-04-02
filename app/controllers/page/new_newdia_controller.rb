@@ -1,8 +1,9 @@
-class Page::NewNewdiaController < ApplicationController
+class Page::NewMediaController< ApplicationController
+	layout 'new_media_layout'
 	def new
 		ids = ShopSubRelation.where(shopid:params[:shopid],freeze:0).pluck(:subid)
 		@shop = ShopProfile.where(shopid:ids).pluck(:shopid,:shopname)
-		@appid = SangnaConfig.where(shop_id:params[:shopid]).pluck(:appid).first
+		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
 	end
 
 	def create
@@ -10,7 +11,6 @@ class Page::NewNewdiaController < ApplicationController
 		appid = params[:appid]
 		shopid = params[:shopid]
 		sangna_config = SangnaConfig.find_by_appid(params[:appid])
-		check_token_expire(sangna_config)
 		params.delete(:appid)
 		params.delete(:shopid)
 		params.delete(:controller)
@@ -32,6 +32,7 @@ class Page::NewNewdiaController < ApplicationController
 				new_media.url = media['news_item'][0]['url']
 				new_media.content_source_url = params[:url]
 				new_media.shopid = shopid
+				new_media.media_id = Media.find_by_media_id(params[:media_id]).id
 				new_media.sangna_config_id = sangna_config.id
 				if new_media.save
 					render plain: 'success'

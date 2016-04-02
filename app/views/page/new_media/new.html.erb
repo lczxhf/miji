@@ -40,7 +40,7 @@
                           var content = $('#content').val();
                           var shopid = $("#shopid option:selected").val();
                           if(check_form(title,author,media_id,digest,content,shopid)){
-                              $.post("/page/new_media",{title:title,author:author,media_id:media_id,digest:digest,content:content,shopid:shopid,appid:'<%=@appid%>',is_cover:'0',url:'http://mijiclub.com'},function(obj){
+                              $.post("/page/new_media",{title:title,author:author,media_id:media_id,digest:digest,content:content,shopid:shopid,appid:'<%=@sangna_config[1]%>',is_cover:'0',url:'http://mijiclub.com'},function(obj){
                                     $("#my_alert").removeClass("hide")
                                     $($("#my_alert").children()[1]).html(obj)
                                     window.scroll(0,0)
@@ -60,10 +60,13 @@
                 $("#submit_add_img").click(function(){
                     file = $("#img_file").prop("files")[0]
                     if (file.size/1024 < 2048){
-                        upload_img("/page/content_media",function(rs){
-                            $("#add_img_url").html(rs);
-                            $("#add_img_success_alert").removeClass("hide");
-                        })
+                        upload_img(file,"/page/content_media",function(rs){
+			   	$("#add_img_url").html(rs.responseText);
+				if(rs.responseText=="添加失败！"){
+					$($("#add_img_success_alert").children()[1]).html(rs.responseText)
+				}
+                            	$("#add_img_success_alert").removeClass("hide");
+                         })
                     }else{
                         alert("请上传小于2M的图片")
                     }
@@ -72,11 +75,16 @@
                 $("#submit_add_main_img").click(function(){
                     file = $("#main_img_file").prop("files")[0]
                     if (file.size/1024 < 2048){
-                        upload_img("/page/media",function(rs){
-                              $("#main_img_preview").attr("src",$("#main_img_file").value)
-                              $("#main_img_ok").removeClass('hidden')
-                              $("#main_img_non").addClass("hidden")
-                              $("#media_id").val(rs)
+                        upload_img(file,"/page/media",function(rs){
+			      var result = JSON.parse(rs.responseText)
+                              if(result['errCode']=="0"){
+			      	$($("#add_main_img_success_alert").children()[1]).html(result['errMsg'])
+			      }else{
+				$("#main_img_preview").attr("src",result["url"])
+                                $("#main_img_ok").removeClass('hidden')
+                                $("#main_img_non").addClass("hidden")
+                                $("#media_id").val(result['media_id'])
+			      }
                               $("#add_main_img_success_alert").removeClass("hide");
                         })
                     }else{
@@ -111,7 +119,7 @@
              function upload_img(file,origin_url,callback){
                 var form = new FormData();
                     form.append('file',file);  
-                    form.append('appid','<%=@appid%>');  
+                    form.append('appid','<%=@sangna_config[1]%>');  
                     var xhr = new XMLHttpRequest();
                     xhr.open("post",origin_url, true);
                     xhr.onload = function(){
@@ -144,7 +152,7 @@
                     $("#main_img_non").removeClass("hidden")
                     result= false;
                 }
-                if(digest>50){
+                if(digest.length>50){
                   
                     $("#digest").parent().parent().addClass("has-error")
                     $("#digest").after("<p class='text-danger'>介绍必须少于五十个字</p>")
@@ -166,6 +174,13 @@
             }
             function show_hide_img_side(type){
               if(type=='show'){
+		if($("#img_side img").size()==0){
+		    $.get("/page/content_media?page=1&all=new_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
+		        for(x in obj){
+		         $($("#img_side").children()[0]).after('<div class="row"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+obj[x]['wechat_url']+'</p></div></div>')
+			}
+		    },'json')
+		}
                 $("#img_side").removeClass("hidden");
               }else{
                 $("#img_side").addClass("hidden");
@@ -176,7 +191,14 @@
 
             function show_hide_main_img_side(type){
                 if(type=='show'){
-                  $("#main_img_side").removeClass("hidden");
+                     if($("#main_img_side img").size()==0){
+		        $.get("/page/media?page=1&m_type=news_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
+		            for(x in obj){
+		             $($("#main_img_side").children()[0]).after('<div class="row"><div class="col-lg-12"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive" target="'+obj[x]['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')
+			    }
+		        },'json')
+		     }
+		     $("#main_img_side").removeClass("hidden");
                 }else{
                   $("#main_img_side").addClass("hidden");
                 }
@@ -288,36 +310,12 @@
                 <span class="glyphicon glyphicon-remove" onclick="show_hide_img_side('hidden')"></span>
             </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-lg-12" style="word-wrap:break-word">
                 <img src="../image/meinv.png" class="img-thumbnail img-responsive"/>
                 <p class="text-justify">wwwwasdasdasdasdasdsadnaskdnaskdnaskdnsakdasndkas</p>
             </div>
-        </div>
-         <div class="row">
-            <div class="col-lg-12" style="word-wrap:break-word">
-                <img src="../image/meinv.png" class="img-thumbnail img-responsive"/>
-                <p class="text-justify">wwwwasdasdasdasdasdsadnaskdnaskdnaskdnsakdasndkas</p>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col-lg-12" style="word-wrap:break-word"> 
-                <img src="../image/meinv.png" class="img-thumbnail img-responsive"/>
-                <p class="text-justify">wwwwasdasdasdasdasdsadnaskdnaskdnaskdnsakdasndkas</p>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col-lg-12" style="word-wrap:break-word">
-                <img src="../image/meinv.png" class="img-thumbnail img-responsive"/>
-                <p class="text-justify">wwwwasdasdasdasdasdsadnaskdnaskdnaskdnsakdasndkas</p>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col-lg-12" style="word-wrap:break-word">
-                <img src="../image/meinv.png" class="img-thumbnail img-responsive"/>
-                <p class="text-justify">wwwwasdasdasdasdasdsadnaskdnaskdnaskdnsakdasndkas</p>
-            </div>
-        </div>
+        </div> -->
         <ul class="pagination">
           <li class="disabled"><a href="#">&laquo;</a></li>
           <li class="disabled"><a href="#">1</a></li>
@@ -343,36 +341,12 @@
                 <span class="glyphicon glyphicon-remove" onclick="show_hide_main_img_side('hidden')"></span>
             </div>
         </div>
-        <div class="row">
-            <div class="col-lg-12">
-                <img src="../image/meinv.png" class="img-thumbnail img-responsive" target="1"/>
-                <button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col-lg-12">
-                <img src="../image/a.jpg" class="img-thumbnail img-responsive" target="2"/>
-                <button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col-lg-12">
-                <img src="../image/b.jpg" class="img-thumbnail img-responsive" target="3"/>
-                <button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button>
-            </div>
-        </div>
-         <div class="row">
-            <div class="col-lg-12">
-                <img src="../image/c.jpg" class="img-thumbnail img-responsive" target="4"/>
-                <button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button>
-            </div>
-        </div>
-         <div class="row">
+        <!-- <div class="row">
             <div class="col-lg-12">
                 <img src="../image/meinv.png" class="img-thumbnail img-responsive" target="5"/>
                 <button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button>
             </div>
-        </div>
+        </div>  -->
         <ul class="pagination">
           <li class="disabled"><a href="#">&laquo;</a></li>
           <li class="disabled"><a href="#">1</a></li>
@@ -457,7 +431,7 @@
                         <img src="" class="img-thumbnail img-responsive" id="add_img_preview"/>
                     </div>
                     </div>
-                    <h4 class="text-center text-success" id="add_img_url"></h4>
+                    <h6 class="text-center text-success" id="add_img_url" style="word-wrap:break-word"></h6>
                  </div>
             </form>
          </div>
