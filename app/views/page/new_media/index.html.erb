@@ -11,7 +11,7 @@
 	}
 </style>
 <script type="text/javascript">
-    
+    var news_page = <%=params[:page] || 1%>;
       
     $(function() { 
       $("[data-toggle='tooltip']").tooltip({html: true}); 
@@ -63,6 +63,12 @@
         $("#del_modal").modal("show")
     }
    function show_page(page){
+      if(page==0){
+          page = news_page + 1;
+      }else if(page==-1){
+          page = news_page - 1;
+      }
+      window.location.href= "/page/newmedia?shopid=<%=params[:shopid]%>&page="+page;
    }
   </script>
 <%end%>

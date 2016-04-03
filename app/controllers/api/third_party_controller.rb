@@ -44,6 +44,12 @@ class Api::ThirdPartyController < ApplicationController
 
 
 	def oauth2
-		redirect_to "http://mijiclub.com/detail.php?code=#{params[:code]}&state=#{params[:state]}&appid=#{params[:appid]}"
+		if params[:code]
+			url="https://api.weixin.qq.com/sns/oauth2/component/access_token?appid=#{params[:appid]}&code=#{params[:code]}&grant_type=authorization_code&component_appid=#{APPID}&component_access_token="+ThirdParty.get_access_token
+			result=JSON.parse(ThirdParty.get_to_wechat(url))
+			if result["openid"]
+				redirect_to "http://mijiclub.com/weixin/page/myCoupons.php?openid=#{result['openid']}&from=weixin"
+			end
+		end		
 	end
 end
