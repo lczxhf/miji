@@ -28,7 +28,7 @@ namespace :page do
   resources :new_media
   resources :content_media
   resources :media
-  post "new_media/change_normal_news" => "new_media#change_normal_news"
+  post "new_media/change_normal_new" => "new_media#change_normal_new"
 end
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'

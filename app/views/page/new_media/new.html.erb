@@ -31,6 +31,7 @@
            var main_img_page = 1;
             $(function(){
                $('#content').cleditor();
+		$("#sidebar .nav-tabs li a").eq(1).css("color","#000000")
                $('#show_main_img_box').click(function(){
                   show_hide_main_img_side('show')
                   show_hide_img_side('hidden')
@@ -264,7 +265,7 @@
          <div class="well">
            <div class="panel">
             <ul class="nav nav-tabs">
-              <li class=""><a href="/page/new_media"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
+              <li class=""><a href="/page/new_media?shopid=<%=params[:shopid]%>"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
               <li class="active"><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
             </ul>
             </div>

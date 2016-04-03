@@ -6,7 +6,7 @@ class Page::NewMediaController< ApplicationController
 			page = 1
 		end
 		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
-		@news = NewMedia.includes(:media).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((page-1)*16).limit(16)\
+		@news = NewMedia.includes(:media,:shop_profile).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((page-1)*16).limit(16)
 		@total_page = (NewMedia.where(sangna_config_id:@sangna_config[0],del:1).count/16.0).ceil
 	end
 
@@ -73,7 +73,7 @@ class Page::NewMediaController< ApplicationController
 				end
 			end
 		elsif params[:type] == 'cancel'
-			if NewMedia.find(params[:news_id]).update_attribute(n_type,2)
+			if NewMedia.find(params[:news_id]).update_attribute(:n_type,2)
 				render plain: %{{"errCode":"1","errMsg":"取消成功！"}}
 			else
 				render plain: %{{"errCode":"0","errMsg":"取消失败！"}}

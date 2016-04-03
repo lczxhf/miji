@@ -1,7 +1,7 @@
 <%content_for :head do%>
 <style type="text/css">
 	body{
-		background-image: url('../image/bg.jpg');
+		background-image: url('/images/bg.jpg');
 	}
 	#sidebar  a{
 		color: white;
@@ -13,8 +13,9 @@
 <script type="text/javascript">
     
       
-    $(function () { 
-      $("[data-toggle='tooltip']").tooltip(); 
+    $(function() { 
+      $("[data-toggle='tooltip']").tooltip({html: true}); 
+      $("[data-toggle='tooltip']").tooltip('show'); 
       $("#sidebar .nav-tabs li a").eq(1).css("color","#000000")
     });
     function del_news(obj){
@@ -25,15 +26,15 @@
       		if(result['errCode']=="1"){
       			after_cancel($(".new_content .btn-success[target='"+$(obj).attr("target")+"']"))
        			$(obj).attr("data-toggle","tooltip")
-       			$(obj).attr("title","已设置为默认图文消息！")
-       			$(obj).tooltip()
+      			$(obj).tooltip({html: true}); 
+       			$(obj).tooltip('show')
        			$(obj).children().removeClass("glyphicon-heart－empty")
        			$(obj).children().addClass("glyphicon-heart")
        			$(obj).removeClass("btn-primary")
        			$(obj).addClass("btn-success")
        			$(obj).attr("onclick","cancel_normal_news(this)")      			
        		}
-       		alert(errCode['errMsg']);
+       		alert(result['errMsg']);
       })
     }
     function cancel_normal_news(obj){
@@ -42,11 +43,11 @@
        			after_cancel(obj)
        			$(obj).attr("onclick","set_normal_news(this)")  
        		}
-       		alert(reuslt["errMsg"]);
+       		alert(result["errMsg"]);
        	})
     }
     function after_cancel(obj){
-    	$(obj).attr("data-toggle","")
+	$(obj).tooltip('destroy')
        			$(obj).children().removeClass("glyphicon-heart")
        			$(obj).children().addClass("glyphicon-heart-empty")
        			$(obj).removeClass("btn-success")
@@ -61,6 +62,8 @@
         $("#del_modal button:last").attr("target",$(obj).parent().attr("target"))
         $("#del_modal").modal("show")
     }
+   function show_page(page){
+   }
   </script>
 <%end%>
 <%content_for :body do%>
@@ -69,7 +72,7 @@
       				<div class="panel">
             			<ul class="nav nav-tabs">
               				<li class="active"><a href="#"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
-              				<li class=""><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
+              				<li class=""><a href="/page/new_media/new?shopid=<%=params[:shopid]%>"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
             			</ul>
             		</div>
             		<div class="panel panel-info">
@@ -81,18 +84,19 @@
                				<%(@news.size/4.0).ceil.times do |row|%>
                					<div class="row-fluid new_content">
                						<%4.times.each do |num|%>
+							    <%if @news[row*4+num].present?%>
                							<div class="col-lg-3">
                								<div class="panel panel-info">
                									<div class="panel-heading text-center">
                   									<h6 class="panel-title"><%=@news[row*4+num].title%></h6>
                									</div>
                									<div class="panel-body">
-               										<img src="<%=@news[row*4+num].media.url.thumb.url%>" class="img-thumbnail img-responsive">
+               										<img src="<%=@news[row*4+num].media.local_url.thumb.url%>" class="img-thumbnail img-responsive">
                										<div class="btn-group btn-group-sm pull-right" target="<%=@news[row*4+num].id%>">
                											<%if @news[row*4+num].n_type==1%>
-               												<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="已设置为默认图文消息！" onclick="cancel_normal_news(this)" target='<%=@news[row*4+num].shopid%>'><span class="glyphicon glyphicon-heart"></span></button>
+               												<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="<h3><%=@news[row*4+num].shop_profile.shopname%></h3>的默认图文消息!" data-placement="left" onclick="cancel_normal_news(this)" target='<%=@news[row*4+num].shopid%>'><span class="glyphicon glyphicon-heart"></span></button>
                											<%else%>
-               												<button type="button" class="btn btn-primary btn-sm" onclick="set_normal_news(this)" target='<%=@news[row*4+num].shopid%>'><span class="glyphicon glyphicon-heart-empty"></span></button>
+               												<button type="button" class="btn btn-primary btn-sm" onclick="set_normal_news(this)" title="<h3><%=@news[row*4+num].shop_profile.shopname%></h3>的默认图文消息!" data-placement="left" target='<%=@news[row*4+num].shopid%>'><span class="glyphicon glyphicon-heart-empty"></span></button>
                											<%end%>
                											<button type="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-cog"></span></button>
                											<button type="button" class="btn btn-danger btn-sm" onclick="show_modal(this)"><span class="glyphicon glyphicon-trash"></span></button>
@@ -100,6 +104,7 @@
                									</div>
                								</div>
                							</div> 
+							   <%end%>
                						<%end%>
                					</div>
                				<%end%>
@@ -118,13 +123,14 @@
                							</div>
                						</div>
                					</div> -->
+					      <%if @total_page!=0%>
                					<div class="row-fluid">
       		   						<div class="col-lg-4 col-lg-offset-4">
     									<ul class="pagination">
-    										<%if params[:page]==0 || params[:page]==1%>
-  												<li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(-1)">&laquo;</a></li>
+    										<%if params[:page].to_i==0 || params[:page].to_i==1%>
+  												<li class="disabled"><a href="javascript:void(0)" onclick="show_page(-1)">&laquo;</a></li>
   											<%else%>
-  												<li><a href="javascript:void(0)" onclick="show_page_img(-1)">&laquo;</a></li>
+  												<li><a href="javascript:void(0)" onclick="show_page(-1)">&laquo;</a></li>
   											<%end%>
   											<%@total_page.times.each do |num|%>
   												<%if num+1 == @total_page%>
@@ -133,14 +139,17 @@
   													<li class=""><a href="javascript:void(0)" onclick="show_page(<%=num+1%>)"><%=num+1%></a></li>
   												<%end%>
   											<%end%>
-  											<%if params[:page]==@total_page%>
-  												<li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(-1)">&raquo;</a></li>
+  											<%if params[:page].to_i==@total_page%>
+  												<li class="disabled"><a href="javascript:void(0)" onclick="show_page(-1)">&raquo;</a></li>
   											<%else%>
-  												<li><a href="javascript:void(0)" onclick="show_page_img(-1)">&raquo;</a></li>
+  												<li><a href="javascript:void(0)" onclick="show_page(-1)">&raquo;</a></li>
   											<%end%>
 										</ul>
 									</div>
     							</div>
+					<%else%>
+					<div class="alert alert-warning"><p class="text-center">暂无图文素材</p></div>
+					<%end%>
                				</div>
                			</div>
                		</div>
