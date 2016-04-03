@@ -1,5 +1,15 @@
 class Page::NewMediaController< ApplicationController
 	layout 'new_media_layout'
+
+	def index
+		if !page = params[:page]
+			page = 1
+		end
+		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
+		@news = NewMedia.includes(:media).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((page-1)*16).limit(16)\
+		@total_page = (NewMedia.where(sangna_config_id:@sangna_config[0],del:1).count/16.0).ceil
+	end
+
 	def new
 		ids = ShopSubRelation.where(shopid:params[:shopid],freeze:0).pluck(:subid)
 		@shop = ShopProfile.where(shopid:ids).pluck(:shopid,:shopname)
@@ -46,6 +56,28 @@ class Page::NewMediaController< ApplicationController
 			end
 		else
 			render plain: 'failure'
+		end
+	end
+
+
+	def change_normal_new
+		if params[:type] == 'add'
+			new_media = NewMedia.find(params[:news_id])
+			if new_media
+				NewMedia.where(n_type:1,shopid:params[:shopid]).update_all(n_type:2)
+				new_media.n_type = 1
+				if new_media.save
+					render plain: %{{"errCode":"1","errMsg":"设置成功！"}}
+				else
+					render plain: %{{"errCode":"0","errMsg":"设置失败！"}}
+				end
+			end
+		elsif params[:type] == 'cancel'
+			if NewMedia.find(params[:news_id]).update_attribute(n_type,2)
+				render plain: %{{"errCode":"1","errMsg":"取消成功！"}}
+			else
+				render plain: %{{"errCode":"0","errMsg":"取消失败！"}}
+			end
 		end
 	end
 end

@@ -16,6 +16,15 @@
               top:0px;
               width: 100%;
            }
+           body{
+              background-image: url('/images/bg.jpg');
+          }
+          #sidebar  a{
+            color: white;
+          }
+          #sidebar  a:hover{
+            color: #000000;
+          }
          </style>
          <script type="text/javascript">
            var img_page = 1;
@@ -254,7 +263,7 @@
 <div class="col-sm-2 col-md-2 col-lg-10">
          <div class="well">
            <div class="panel">
-            <ul class="nav nav-tabs bg-info">
+            <ul class="nav nav-tabs">
               <li class=""><a href="/page/new_media"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
               <li class="active"><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
             </ul>
@@ -354,7 +363,7 @@
         </div> -->
         <ul class="pagination" id="img_pagination">
           <li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(-1)">&laquo;</a></li>
-          <li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(1)">1</a></li>
+          <li class="active"><a href="javascript:void(0)" onclick="show_page_img(1)">1</a></li>
           <%(@page[1]-1).times.each do |num|%>
               <li><a href="javascript:void(0)" onclick="show_page_img(<%=num+2%>)"><%=num+2%></a></li>
           <%end%>
@@ -385,7 +394,7 @@
         </div>  -->
         <ul class="pagination" id="main_img_pagination">
           <li class="disabled"><a href="javascript:void(0)" onclick="show_page_main_img(-1)">&laquo;</a></li>
-          <li class="disabled"><a href="javascript:void(0)" onclick="show_page_main_img(1)">1</a></li>
+          <li class="active"><a href="javascript:void(0)" onclick="show_page_main_img(1)">1</a></li>
           <%(@page[0]-1).times.each do |num|%>
               <li><a href="javascript:void(0)" onclick="show_page_main_img(<%=num+2%>)"><%=num+2%></a></li>
           <%end%>

@@ -12,20 +12,20 @@
   <%=yield :head%>
 </head>
 <body>
-<nav class="nav navbar-default navbar-static-top" style="background-color: #C7F5DC;">
+<nav class="nav navbar-default navbar-static-top" style="background-image: url('/images/bg.jpg');">
       <div class="navbar-header">
          <button type="button" class="navbar-toggle" data-toggle="collapse"  data-target="#sidebar">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
          </button>
-         <a class="navbar-brand" href="#">觅技微信设置</a>
+         <a class="navbar-brand" href="#" style="color: white">觅技微信设置</a>
       </div>
       <div>
       <ul class="nav navbar-nav navbar-right" style="margin-right: 20px">
          <li>
                <button type="button" class="btn btn-link navbar-btn dropdown-toggle" 
-      data-toggle="dropdown"><span class="glyphicon glyphicon-home"></span>会所名<span class="caret"></span>
+      data-toggle="dropdown" style="color: white"><span class="glyphicon glyphicon-home"></span>会所名<span class="caret"></span>
               </button>
             <ul class="dropdown-menu nav">
                <li><a href="http://mijiclub.com"><span class="glyphicon glyphicon-user"></span>&nbsp&nbsp我的信息</a></li>
@@ -49,23 +49,23 @@
          
          <div class="collapse navbar-collapse" id='sidebar'>
             <ul class="nav nav-pills nav-stacked">
-               <li class="active"><a data-toggle="collapse" data-target='#one'><span class="glyphicon glyphicon-picture"></span> 素材管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
-               <ul id="one" class="nav nav-tab nav-stacked collapse in">
+               <li class=""><a><span class="glyphicon glyphicon-picture"></span> 素材管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
+               <ul class="nav nav-tabs nav-stacked">
                   <li><a href="#">图片</a></li>
                   <li class="bg-info"><a href="#">图文</a></li>
                </ul>
-               <li class=""><a data-toggle="collapse" data-target='#two'><span class="glyphicon glyphicon-envelope"></span> 消息管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
-                <ul id="two" class="nav nav-tab nav-stacked collapse">
+               <li><a><span class="glyphicon glyphicon-envelope"></span> 消息管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
+                <ul class="nav nav-tabs nav-stacked">
                   <li><a href="#">图片</a></li>
                   <li><a href="#">图文</a></li>
                </ul>
-               <li class=""><a data-toggle="collapse" data-target='#three'><span class="glyphicon glyphicon-user"></span> 用户管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
-                <ul id="three" class="nav nav-tab nav-stacked collapse">
+               <li class=""><a><span class="glyphicon glyphicon-user"></span> 用户管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
+                <ul class="nav nav-tabs nav-stacked">
                   <li><a href="#">图片</a></li>
                   <li><a href="#">图文</a></li>
                </ul>
-               <li class=""><a data-toggle="collapse" data-target='#four'><span class="glyphicon glyphicon-share"></span> 群发功能<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
-                <ul id="four" class="nav nav-tab nav-stacked collapse">
+               <li class=""><a><span class="glyphicon glyphicon-share"></span> 群发功能<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
+               <ul class="nav nav-tabs nav-stacked">
                   <li><a href="#">图片</a></li>
                   <li><a href="#">图文</a></li>
                </ul>

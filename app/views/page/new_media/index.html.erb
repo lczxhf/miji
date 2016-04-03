@@ -1,0 +1,177 @@
+<%content_for :head do%>
+<style type="text/css">
+	body{
+		background-image: url('../image/bg.jpg');
+	}
+	#sidebar  a{
+		color: white;
+	}
+	#sidebar  a:hover{
+		color: #000000;
+	}
+</style>
+<script type="text/javascript">
+    
+      
+    $(function () { 
+      $("[data-toggle='tooltip']").tooltip(); 
+      $("#sidebar .nav-tabs li a").eq(1).css("color","#000000")
+    });
+    function del_news(obj){
+        alert($(obj).attr("target"))
+    }
+    function set_normal_news(obj){
+      update_normal_news("add",$(obj).attr("target"),$(obj).parent().attr("target"),function(result){
+      		if(result['errCode']=="1"){
+      			after_cancel($(".new_content .btn-success[target='"+$(obj).attr("target")+"']"))
+       			$(obj).attr("data-toggle","tooltip")
+       			$(obj).attr("title","已设置为默认图文消息！")
+       			$(obj).tooltip()
+       			$(obj).children().removeClass("glyphicon-heart－empty")
+       			$(obj).children().addClass("glyphicon-heart")
+       			$(obj).removeClass("btn-primary")
+       			$(obj).addClass("btn-success")
+       			$(obj).attr("onclick","cancel_normal_news(this)")      			
+       		}
+       		alert(errCode['errMsg']);
+      })
+    }
+    function cancel_normal_news(obj){
+       	update_normal_news("cancel",$(obj).attr("target"),$(obj).parent().attr("target"),function(result){
+       		if(result['errCode']=="1"){
+       			after_cancel(obj)
+       			$(obj).attr("onclick","set_normal_news(this)")  
+       		}
+       		alert(reuslt["errMsg"]);
+       	})
+    }
+    function after_cancel(obj){
+    	$(obj).attr("data-toggle","")
+       			$(obj).children().removeClass("glyphicon-heart")
+       			$(obj).children().addClass("glyphicon-heart-empty")
+       			$(obj).removeClass("btn-success")
+       			$(obj).addClass("btn-primary")
+    }
+    function update_normal_news(type,shopid,news_id,callback){
+    	$.post("/page/new_media/change_normal_new",{type:type,shopid:shopid,news_id:news_id},function(result){
+    		callback(result)
+       },'json')
+    }
+    function show_modal(obj){
+        $("#del_modal button:last").attr("target",$(obj).parent().attr("target"))
+        $("#del_modal").modal("show")
+    }
+  </script>
+<%end%>
+<%content_for :body do%>
+<div class="col-lg-10 col-sm-10 col-md-10">
+      			<div class="well">
+      				<div class="panel">
+            			<ul class="nav nav-tabs">
+              				<li class="active"><a href="#"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
+              				<li class=""><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
+            			</ul>
+            		</div>
+            		<div class="panel panel-info">
+               			<div class="panel-heading text-center">
+                  			<h5 class="panel-title">图文素材列表</h5>
+               			</div>
+               			<div class="panel-body">
+               				
+               				<%(@news.size/4.0).ceil.times do |row|%>
+               					<div class="row-fluid new_content">
+               						<%4.times.each do |num|%>
+               							<div class="col-lg-3">
+               								<div class="panel panel-info">
+               									<div class="panel-heading text-center">
+                  									<h6 class="panel-title"><%=@news[row*4+num].title%></h6>
+               									</div>
+               									<div class="panel-body">
+               										<img src="<%=@news[row*4+num].media.url.thumb.url%>" class="img-thumbnail img-responsive">
+               										<div class="btn-group btn-group-sm pull-right" target="<%=@news[row*4+num].id%>">
+               											<%if @news[row*4+num].n_type==1%>
+               												<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="已设置为默认图文消息！" onclick="cancel_normal_news(this)" target='<%=@news[row*4+num].shopid%>'><span class="glyphicon glyphicon-heart"></span></button>
+               											<%else%>
+               												<button type="button" class="btn btn-primary btn-sm" onclick="set_normal_news(this)" target='<%=@news[row*4+num].shopid%>'><span class="glyphicon glyphicon-heart-empty"></span></button>
+               											<%end%>
+               											<button type="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-cog"></span></button>
+               											<button type="button" class="btn btn-danger btn-sm" onclick="show_modal(this)"><span class="glyphicon glyphicon-trash"></span></button>
+               										</div>
+               									</div>
+               								</div>
+               							</div> 
+               						<%end%>
+               					</div>
+               				<%end%>
+<!--                					<div class="col-lg-3">
+               						<div class="panel panel-info">
+               							<div class="panel-heading text-center">
+                  							<h6 class="panel-title">xxxxx</h6>
+               							</div>
+               							<div class="panel-body">
+               								<img src="../image/bg.jpg" class="img-thumbnail img-responsive">
+               								<div class="btn-group btn-group-sm pull-right" target="1">
+               										<button type="button" class="btn btn-success btn-sm" data-toggle="tooltip" title="已设置为默认图文消息！" onclick="cancel_normal_news(this)"><span class="glyphicon glyphicon-heart"></span></button>
+               										<button type="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-cog"></span></button>
+               										<button type="button" class="btn btn-danger btn-sm" onclick="show_modal(this)"><span class="glyphicon glyphicon-trash"></span></button>
+               									</div>
+               							</div>
+               						</div>
+               					</div> -->
+               					<div class="row-fluid">
+      		   						<div class="col-lg-4 col-lg-offset-4">
+    									<ul class="pagination">
+    										<%if params[:page]==0 || params[:page]==1%>
+  												<li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(-1)">&laquo;</a></li>
+  											<%else%>
+  												<li><a href="javascript:void(0)" onclick="show_page_img(-1)">&laquo;</a></li>
+  											<%end%>
+  											<%@total_page.times.each do |num|%>
+  												<%if num+1 == @total_page%>
+  													<li class="active"><a href="javascript:void(0)" onclick="show_page(<%=num+1%>)"><%=num+1%></a></li>
+  												<%else%>
+  													<li class=""><a href="javascript:void(0)" onclick="show_page(<%=num+1%>)"><%=num+1%></a></li>
+  												<%end%>
+  											<%end%>
+  											<%if params[:page]==@total_page%>
+  												<li class="disabled"><a href="javascript:void(0)" onclick="show_page_img(-1)">&raquo;</a></li>
+  											<%else%>
+  												<li><a href="javascript:void(0)" onclick="show_page_img(-1)">&raquo;</a></li>
+  											<%end%>
+										</ul>
+									</div>
+    							</div>
+               				</div>
+               			</div>
+               		</div>
+      			</div>
+      		</div>
+    	</div>
+  </div>
+
+<!-- 模态框（Modal） -->
+  <div class="modal fade" id="del_modal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               是否确认删除！
+            </h4>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-danger" target="0" onclick="del_news(this)">
+               删除
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+</div>
+<%end%>
