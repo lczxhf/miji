@@ -50,6 +50,17 @@ class Sangna
 		result=ThirdParty.sent_to_wechat(url,body)
 		puts result
 	end
+
+	def self.get_menu_info(token)
+		url = "https://api.weixin.qq.com/cgi-bin/get_current_selfmenu_info?access_token="+token
+		result = ThirdParty.get_to_wechat(url)
+	end
+
+	def self.get_auto_response_info(token)
+		url="https://api.weixin.qq.com/cgi-bin/get_current_autoreply_info?access_token="+token
+		result = ThirdParty.get_to_wechat(url)
+	end
+
 	def self.get_gzh_info(appid)
 		url='https://api.weixin.qq.com/cgi-bin/component/api_get_authorizer_info?component_access_token='+ThirdParty.get_access_token
 		body='{"component_appid":"'+APPID+'","authorizer_appid":"'+appid+'"}'
