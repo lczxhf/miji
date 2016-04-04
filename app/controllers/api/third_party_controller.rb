@@ -3,7 +3,7 @@ class Api::ThirdPartyController < ApplicationController
 
 	def home
 		shop_member = ShopMember.find_by_shopid(params[:id])
-		if shop_member.expdate==0 || Time.now - shop_member.expdate < 0
+		if shop_member.expdate==0 || (Time.now.to_i - shop_member.expdate) < 0
 			@url="https://mp.weixin.qq.com/cgi-bin/componentloginpage?component_appid=#{APPID}&pre_auth_code=#{Rails.cache.read(:pre_code)}&redirect_uri=http://callback.mijiclub.com/api/third_party/auth_code?id=#{params[:id]}"
  	 		render :home,:layout=>false
  	 	else

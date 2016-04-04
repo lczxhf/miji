@@ -19,7 +19,13 @@
       $("#sidebar .nav-tabs li a").eq(1).css("color","#000000")
     });
     function del_news(obj){
-        alert($(obj).attr("target"))
+	$.post("/page/new_media/"+$(obj).attr("target"),{_method:"delete"},function(result){
+		if(result['errCode']=='1'){
+			$(".btn-group[target='"+$(obj).attr("target")+"']").parentsUntil(".new_content").remove();
+			$("#del_modal").modal("hide")
+		}
+		alert(result['errMsg'])	
+	},'json')
     }
     function set_normal_news(obj){
       update_normal_news("add",$(obj).attr("target"),$(obj).parent().attr("target"),function(result){
@@ -112,6 +118,7 @@
                							</div> 
 							   <%end%>
                						<%end%>
+							<div class="clearfix visible-lg"></div>
                					</div>
                				<%end%>
 <!--                					<div class="col-lg-3">

@@ -218,6 +218,7 @@
                             $("#img_side").children('ul').before('<div class="row lzh"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+obj[x]['wechat_url']+'</p></div></div>')
                            }
                            $("#img_pagination").children().removeClass("disabled")
+                           $("#img_pagination").children().removeClass("active")
                            if(page==1){
                               $("#img_pagination").children().first().addClass("disabled")
                            }
@@ -240,6 +241,7 @@
                                 $("#main_img_side").children('ul').before('<div class="row lzh"><div class="col-lg-12"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive" target="'+obj[x]['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')
                              }
                              $("#main_img_pagination").children().removeClass("disabled")
+                             $("#main_img_pagination").children().removeClass("active")
                              if(page==1){
                               $("#main_img_pagination").children().first().addClass("disabled")
                            }

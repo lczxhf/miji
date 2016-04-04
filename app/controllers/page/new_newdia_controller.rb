@@ -1,6 +1,6 @@
 class Page::NewMediaController< ApplicationController
 	layout 'new_media_layout'
-
+	before_action :check,only: [:index,:new,:create]
 	def index
 		if !page = params[:page]
 			page = 1
@@ -59,7 +59,13 @@ class Page::NewMediaController< ApplicationController
 		end
 	end
 
-
+	def destroy
+		if NewMedia.find(params[:id]).update_attribute(:del,2)
+			render plain: %{{"errCode":"1","errMsg":"删除成功！"}}
+		else
+			render plain: %{{"errCode":"0","errMsg":"删除失败！"}}
+		end
+	end
 	def change_normal_new
 		if params[:type] == 'add'
 			new_media = NewMedia.find(params[:news_id])
@@ -78,6 +84,13 @@ class Page::NewMediaController< ApplicationController
 			else
 				render plain: %{{"errCode":"0","errMsg":"取消失败！"}}
 			end
+		end
+	end
+
+	def check
+		shop_member = ShopMember.find(params[:shopid])
+		if !shop_member.auth
+			redirect_to "http://mijiclub.com"
 		end
 	end
 end
