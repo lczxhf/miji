@@ -11,7 +11,7 @@
 	}
 </style>
 <script type="text/javascript">
-    var news_page = <%=params[:page] || 1%>;
+    var news_page = <%=params[:page]%>;
       
     $(function() { 
       $("[data-toggle='tooltip']").tooltip({html: true}); 
@@ -70,11 +70,11 @@
     }
    function show_page(page){
       if(page==0){
-          page = news_page + 1;
+          page = ++news_page;
       }else if(page==-1){
-          page = news_page - 1;
+          page = --news_page;
       }
-      window.location.href= "/page/newmedia?shopid=<%=params[:shopid]%>&page="+page;
+      window.location.href= "/page/new_media?shopid=<%=params[:shopid]%>&page="+page;
    }
   </script>
 <%end%>
@@ -140,8 +140,12 @@
                					<div class="row-fluid">
       		   						<div class="col-lg-4 col-lg-offset-4">
     									<ul class="pagination">
-    										<%if params[:page].to_i==0 || params[:page].to_i==1%>
+    										<%if params[:page].to_i==1%>
+												<%if @total_page==1%>
+  												<li class="disabled"><a href="javascript:void(0)">&laquo;</a></li>
+												<%else%>
   												<li class="disabled"><a href="javascript:void(0)" onclick="show_page(-1)">&laquo;</a></li>
+												<%end%>
   											<%else%>
   												<li><a href="javascript:void(0)" onclick="show_page(-1)">&laquo;</a></li>
   											<%end%>
@@ -153,7 +157,11 @@
   												<%end%>
   											<%end%>
   											<%if params[:page].to_i==@total_page%>
+												<%if @total_page == 1%>
+  												<li class="disabled"><a href="javascript:void(0)">&raquo;</a></li>
+												<%else%>
   												<li class="disabled"><a href="javascript:void(0)" onclick="show_page(-1)">&raquo;</a></li>
+												<%end%>
   											<%else%>
   												<li><a href="javascript:void(0)" onclick="show_page(-1)">&raquo;</a></li>
   											<%end%>

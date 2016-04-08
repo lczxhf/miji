@@ -2,11 +2,11 @@ class Page::NewMediaController< ApplicationController
 	layout 'new_media_layout'
 	before_action :check,only: [:index,:new,:create]
 	def index
-		if !page = params[:page]
-			page = 1
+		if params[:page].to_i <= 0
+		     params[:page] = 1
 		end
 		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
-		@news = NewMedia.includes(:media,:shop_profile).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((page-1)*16).limit(16)
+		@news = NewMedia.includes(:media,:shop_profile).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((params[:page].to_i-1)*16).limit(16)
 		@total_page = (NewMedia.where(sangna_config_id:@sangna_config[0],del:1).count/16.0).ceil
 	end
 
