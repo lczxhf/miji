@@ -215,7 +215,7 @@ class Sangna
 		ThirdParty.sent_to_wechat(url,body)
 	end
 	
-	def sent_custom_message(token,openid,content)
+	def self.sent_custom_message(token,openid,content)
 		url="https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token="+token
 		body='{"touser":"'+openid+'","msgtype":"text","text":{"content":"'+content+'"}}'
 		result=	JSON.parse(ThirdParty.sent_to_wechat(url,body))

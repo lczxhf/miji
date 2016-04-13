@@ -7,6 +7,9 @@ class WEvent
     end
 
     def handle
+	if @weixin_message.ToUserName == 'gh_3c884a361561'
+		reply_text_message @weixin_message.Event+"from_callback"
+	else
     	case @weixin_message.Event
     	when 'subscribe'
     		subscribe
@@ -17,6 +20,7 @@ class WEvent
     	else
     		common_handle
     	end
+	end
     end
 
     def subscribe
@@ -68,6 +72,8 @@ class WEvent
         reply_news_message(arr)
     end
 
+    def get_location
+    end
     def common_handle
     end
 end
