@@ -1,5 +1,6 @@
 class SangnaConfig < ActiveRecord::Base
 	has_many :customer_lists
+	has_one :normal_new,-> {where(del:1)}
 
 	after_find :check_token_expire
 

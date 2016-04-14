@@ -34,7 +34,12 @@ class WEvent
        if @weixin_message.EventKey.present?
             scan
        else
-            reply_news_message([generate_article('谢谢您的关注','点击查看详情','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/')])
+	    normal_new = @sangna_config.normal_new
+	    if normal_new
+            reply_news_message([generate_article(normal_new.title,normal_new.content,"http://callback.mijiclub.com"+normal_new.img_url.url,'http://mijiclub.com/')])
+	    else
+		reply_news_message([generate_article('谢谢您的关注','点击查看详情','http://callback.mijiclub.com/images/subscribe.png','http://mijiclub.com/')])
+	    end
        end
 	   
     end
@@ -58,7 +63,8 @@ class WEvent
 	    mybase64 = Mybase64.new
         url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(str)}&openid=#{@weixin_message.FromUserName}"
 	shop_profile = ShopProfile.where(shopid:str).pluck(:shopname,:district).first
-        arr << generate_article("#{shop_profile[1]}#{shop_profile[0]}欢迎您！点击查看WIFI密码",'查看店内信息 获取优惠券','http://callback.mijiclub.com/images/subscribe.png',url)
+	img_url = @sangna_config.normal_new ? "http://callback.mijiclub.com"+@sangna_config.normal_new.img_url.url : nil
+        arr << generate_article("#{shop_profile[1]}#{shop_profile[0]}欢迎您！点击查看WIFI密码",'查看店内信息 获取优惠券',img_url || 'http://callback.mijiclub.com/images/subscribe.png',url)
         shop_id = ShopSubRelation.where(subid:str).pluck(:shopid).first
         if shop_id
             GetCoupon.perform_async(@weixin_message.FromUserName,str,shop_id)
