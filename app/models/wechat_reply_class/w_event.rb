@@ -25,12 +25,12 @@ class WEvent
 
     def subscribe
 	   
-	   customer = CustomerList.find_or_initialize_by(openid:@weixin_message.FromUserName)
-	   customer.del = 1
-	   customer.updatetime = Time.now.to_i
-	   customer.sangna_config_id = @sangna_config.id
-	   customer.subid = @sangna_config.shop_id
-	   customer.save
+	   #customer = CustomerList.find_or_initialize_by(openid:@weixin_message.FromUserName)
+	   #customer.del = 1
+	   #customer.updatetime = Time.now.to_i
+	   #customer.sangna_config_id = @sangna_config.id
+	   #customer.subid = @sangna_config.shop_id
+	   #customer.save
        if @weixin_message.EventKey.present?
             scan
        else
@@ -48,21 +48,22 @@ class WEvent
 	   customer = CustomerList.find_or_initialize_by(openid:@weixin_message.FromUserName)
 	   customer.del = 2
 	   customer.updatetime = Time.now.to_i
-	   customer.sangna_config_id = @sangna_config.id
-	   customer.subid = @sangna_config.shop_id
 	   customer.save
 	   reply_text_message 'success'
     end
 
     def scan
-        
         str = @weixin_message.EventKey.delete('qrscene_')
-
+        customer = CustomerList.find_or_initialize_by(subid:str,openid:@weixin_message.FromUserName)
+	customer.del = 1
+	customer.updatetime = Time.now.to_i
+	customer.sangna_config_id = @sangna_config.id
+	customer.save
         arr = []
         time = Time.now.to_i
 	    mybase64 = Mybase64.new
-        url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(str)}&openid=#{@weixin_message.FromUserName}"
 	shop_profile = ShopProfile.where(shopid:str).pluck(:shopname,:district).first
+        url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(str)}&openid=#{@weixin_message.FromUserName}&title=#{URI::escape(shop_profile[0])}"
 	img_url = @sangna_config.normal_new ? "http://callback.mijiclub.com"+@sangna_config.normal_new.img_url.url : nil
         arr << generate_article("#{shop_profile[1]}#{shop_profile[0]}欢迎您！点击查看WIFI密码",'查看店内信息 获取优惠券',img_url || 'http://callback.mijiclub.com/images/subscribe.png',url)
         shop_id = ShopSubRelation.where(subid:str).pluck(:shopid).first
