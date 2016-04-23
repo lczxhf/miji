@@ -1,15 +1,5 @@
 <%content_for :head do%>
-<style type="text/css">
-	body{
-		background-image: url('/images/bg.jpg');
-	}
-	#sidebar  a{
-		color: white;
-	}
-	#sidebar  a:hover{
-		color: #000000;
-	}
-</style>
+
 <script type="text/javascript">
     var news_page = <%=params[:page]%>;
       
@@ -17,6 +7,7 @@
       $("[data-toggle='tooltip']").tooltip({html: true}); 
       $("[data-toggle='tooltip']").tooltip('show'); 
       $("#sidebar .nav-tabs li a").eq(1).css("color","#000000")
+      $("#sidebar .nav-tabs:eq(1) li:eq(0)").addClass("bg-info")
     });
     function del_news(obj){
 	$.post("/page/new_media/"+$(obj).attr("target"),{_method:"delete"},function(result){

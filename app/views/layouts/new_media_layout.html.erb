@@ -9,6 +9,17 @@
   <%=stylesheet_link_tag 'jquery.cleditor'%>
   <%=stylesheet_link_tag 'bootstrap.min'%>
   <%= csrf_meta_tags %>
+  <style type="text/css">
+  body{
+    background-image: url('/images/bg.jpg');
+  }
+  #sidebar  a{
+    color: white;
+  }
+  #sidebar  a:hover{
+    color: #000000;
+  }
+</style>
   <%=yield :head%>
 </head>
 <body>
@@ -52,9 +63,13 @@
                <li class=""><a><span class="glyphicon glyphicon-picture"></span> 素材管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
                <ul class="nav nav-tabs nav-stacked">
                   <li><a href="#">图片</a></li>
-                  <li class="bg-info"><a href="#">图文</a></li>
+                  <li><a href="#">图文</a></li>
                </ul>
-               <li><a><span class="glyphicon glyphicon-envelope"></span> 消息管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
+               <li class=""><a><span class="glyphicon glyphicon-cog"></span> 设置管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
+               <ul class="nav nav-tabs nav-stacked">
+                  <li><a href="#">扫码回复</a></li>
+               </ul>
+               <!-- <li><a><span class="glyphicon glyphicon-envelope"></span> 消息管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
                 <ul class="nav nav-tabs nav-stacked">
                   <li><a href="#">图片</a></li>
                   <li><a href="#">图文</a></li>
@@ -68,7 +83,7 @@
                <ul class="nav nav-tabs nav-stacked">
                   <li><a href="#">图片</a></li>
                   <li><a href="#">图文</a></li>
-               </ul>
+               </ul> -->
 
             </ul>
          </div>
