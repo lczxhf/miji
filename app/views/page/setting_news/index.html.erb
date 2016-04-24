@@ -42,7 +42,7 @@
     else{
         //加载图文素材
         $("#news_content").empty();
-        $.get("/page/new_media",{shopid:<%=params[:shopid]%>,page_num:4},function(result){
+        $.get("/page/new_media",{shopid:<%=params[:shopid]%>},function(result){
             var html = "";
             for (var i = 0; i < result.length; i++) {
               if (i==0){
@@ -51,7 +51,7 @@
               else if(i!=0 && i%4 == 0){
                   html += '</div><div class="row-fluid">'
               }
-              html += '<div class="col-lg-3" onclick="choose_news(this)" target="'+result[i].id+'"><div class="panel panel-info"><div class="panel-heading text-center"><h6 class="panel-title">'+result[i].title+'</h6></div><div class="panel-body"><img src="'+result[i].thumb_media.local_url.thumb.url+'" class="img-thumbnail img-responsive"></div></div></div>' 
+              html += '<div class="col-lg-3" onclick="choose_news(this)" target="'+result[i].id+'"><div class="panel panel-info"><div class="panel-heading text-center"><h6 class="panel-title">'+result[i].title+'</h6></div><div class="panel-body"><img src="'+result[i].media.local_url.thumb.url+'" class="img-thumbnail img-responsive"></div></div></div>' 
             };
             $("#news_content").append(html);
         },"json")
@@ -64,24 +64,36 @@
       var title = $("#title").val();
       var content = $("#content").val();
       var img = $("#img_url").prop("files")[0]
-      if(title != "" && content != "" && ((img != "" && typeof(img) != "undefined") || $("#preview_img").attr("src") != "")){
+      if(title != "" && content != "" && ((img != "" && typeof(img) != "undefined") || ($("#preview_img").attr("src") != "" && $(obj).attr("target")=="true"))){
         var url = ""
          if($(obj).attr("target")=="true"){
-            url = "/page/normal_news/<%=@normal_new.try(:id)%>/update"
+            url = "/page/normal_news/<%=@normal_new.try(:id)%>"
          }else{
-            url = "page/normal_news"
+            url = "/page/normal_news"
          }
-           $.post(url,{title:title,content:content,img_url:img},function(obj){
-                if(obj.errCode=="1"){
+	 var form = new FormData();
+	 form.append("title",title)
+	 form.append("content",content)
+	 form.append("img_url",img)
+	 form.append("shopid",<%=params[:shopid]%>)
+	 if($(obj).attr("target") == 'true'){
+		form.append("_method","put")
+	 }
+	 var xhr = new XMLHttpRequest();
+         xhr.open("post",url, true);
+         xhr.onload = function(){
+		result = JSON.parse(xhr.responseText)
+		if(result.errCode=="1"){
                     $("#first_content").html(content);
                     $("#first_title").html(title)
                     $(".new_img").attr("src",$("#preview_img").attr("src"))
                     $("#first_modal").modal("hide");
-                    alert(obj.errMsg)
+                    alert(result.errMsg)
                 }else{
-                  alert(obj.errMsg)
+                  alert(reuslt.errMsg)
                 }
-           },"json")
+         }
+         xhr.send(form);
       }else{
           alert("请填写完整信息")
       }
@@ -92,15 +104,17 @@
       var id = $(obj).attr("target");
       var url = "" ;
       var list_id = $("#news_content").attr("target")
+      var _method = ""
       if( list_id=="0"){
           //添加
           url="/page/setting_news";
       }else{
-          url = "/page/setting_news/"+list_id+"/update"
+          url = "/page/setting_news/"+list_id
+	  _method = 'put'
       }
       var img = $(obj).children().children(".panel-body").children("img")
       var title = $(obj).children().children().children(".panel-title")
-      $.post(url,{shopid:<%=params[:shopid]%>,news_id:id,list_id:list_id},function(result){
+      $.post(url,{shopid:<%=params[:shopid]%>,news_id:id,_method:_method},function(result){
           if(result.errCode == "1"){
             if(list_id=="0"){
               $(".list-group li:last").after('<li class="list-group-item new_list" onclick="show_modal(false,this)" target="'+result.errMsg+'"><img src="'+img.attr("src")+'" class="new_other pull-right"><span>'+title.html()+'</span></li>')

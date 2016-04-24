@@ -61,11 +61,11 @@ class WEvent
 	customer.save
         arr = []
         time = Time.now.to_i
-	    mybase64 = Mybase64.new
+	mybase64 = Mybase64.new
 	shop_profile = ShopProfile.where(shopid:str).pluck(:shopname,:district).first
         url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(str)}&openid=#{@weixin_message.FromUserName}&title=#{URI::escape(shop_profile[0])}"
 	img_url = @sangna_config.normal_new ? "http://callback.mijiclub.com"+@sangna_config.normal_new.img_url.url : nil
-        arr << generate_article("#{shop_profile[1]}#{shop_profile[0]}欢迎您！点击查看WIFI密码",'查看店内信息 获取优惠券',img_url || 'http://callback.mijiclub.com/images/subscribe.png',url)
+        arr << generate_article(@sangna_config.normal_new.try(:title) || "#{shop_profile[1]}#{shop_profile[0]}欢迎您！点击查看WIFI密码",@sangna_config.normal_new.try(:content) || '查看店内信息 获取优惠券',img_url || 'http://callback.mijiclub.com/images/subscribe.png',url)
         shop_id = ShopSubRelation.where(subid:str).pluck(:shopid).first
         if shop_id
             GetCoupon.perform_async(@weixin_message.FromUserName,str,shop_id)
