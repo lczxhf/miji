@@ -24,10 +24,11 @@ namespace :api do
 end
 
 namespace :page do
-  resources :shop_articles
   resources :new_media
   resources :content_media
   resources :media
+  resources :setting_news
+  resources :normal_news
   post "new_media/change_normal_new" => "new_media#change_normal_new"
 end
   # Example of regular route:

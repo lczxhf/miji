@@ -141,7 +141,7 @@
                             <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_other"></div>
  -->
                             <ul class="list-group">
-                              <li class="list-group-item new_first" onclick="show_modal(true)"><div><span id="first_title"><%=@normal_new.title%></span><img src="<%=@normal_new.img_url.url%>" class="img-thumbnail img-responsive new_img"><span id="first_content"><%=@normal_new.content%></span><div></li>
+                              <li class="list-group-item new_first" onclick="show_modal(true)"><div><span id="first_title"><%=@normal_new['title']%></span><img src="<%=@normal_new.try(:img_url).try(:url) || "/images/subscribe.png"%>" class="img-thumbnail img-responsive new_img"><span id="first_content"><%=@normal_new['content']%></span><div></li>
                               <%@setting_news.each do |setting_new|%>
                               	 <li class="list-group-item new_list" onclick="show_modal(false,this)" target="<%=setting_new.id%>"><img src="<%=setting_new.new_media.media.local_url.thumb.url%>" class="new_other pull-right"><span><%=setting_new.new_media.title%></span></li>
                               <%end%>
@@ -204,7 +204,7 @@
             <button type="button" class="btn btn-default" 
                data-dismiss="modal">关闭
             </button>
-            <button type="button" class="btn btn-danger" target="true" onclick="change_first_news(this)">
+            <button type="button" class="btn btn-danger" target="<%=@normal_new.try(:id).nil? ? false:true%>" onclick="change_first_news(this)">
                修改
             </button>
          </div>

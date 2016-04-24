@@ -49,7 +49,7 @@ class Api::ThirdPartyController < ApplicationController
 			result=JSON.parse(ThirdParty.get_to_wechat(url))
 			if result["openid"]
 				mybase64 = Mybase64.new
-				redirect_to "http://mijiclub.com/weixin/page/myCoupons.php?sid=#{mybase64.encodeAuth(SangnaConfig.where(appid:result[:appid]).first.shop_id)}&openid=#{result['openid']}&from=weixin"
+				redirect_to "http://mijiclub.com/weixin/page/myCoupons.php?sid=#{mybase64.encodeAuth(SangnaConfig.where(appid:params[:appid]).first.shop_id)}&openid=#{result['openid']}&from=weixin"
 			end
 		end		
 	end
