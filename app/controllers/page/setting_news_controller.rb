@@ -38,5 +38,6 @@ layout 'new_media_layout'
 
 	def destroy
 		SettingNew.find(params[:id]).destroy!
+		render plain: '{"errCode":1,"errMsg":"删除失败"}'
 	end
 end
