@@ -66,16 +66,11 @@ class WEvent
         url = "http://mijiclub.com/weixin/page/technicianList.php?tm=#{time}&tkey=#{mybase64.encodeAuth(time)}&sid=#{mybase64.encodeAuth(str)}&openid=#{@weixin_message.FromUserName}&title=#{URI::escape(shop_profile[0])}"
 	img_url = @sangna_config.normal_new ? "http://callback.mijiclub.com"+@sangna_config.normal_new.img_url.url : nil
         arr << generate_article(@sangna_config.normal_new.try(:title) || "#{shop_profile[1]}#{shop_profile[0]}欢迎您！点击查看WIFI密码",@sangna_config.normal_new.try(:content) || '查看店内信息 获取优惠券',img_url || 'http://callback.mijiclub.com/images/subscribe.png',url)
-        shop_id = ShopSubRelation.where(subid:str).pluck(:shopid).first
-        if shop_id
-            GetCoupon.perform_async(@weixin_message.FromUserName,str,shop_id)
-            ids = ShopSubRelation.where(shopid:shop_id).pluck(:subid)
-            articles = NewMedia.where(shopid:ids,n_type:1,del:1)
-            articles.each do |article|
+            GetCoupon.perform_async(@weixin_message.FromUserName,str,@sangna_config.shop_id)
+            SettingNew.includes(:new_media).where(sangna_config_id:@sangna_config.id).each do |article|
                 # add other articles
-                arr << generate_article(article.title,article.digest,article.thumb_url,article.url)
+                arr << generate_article(article.new_media.title,article.new_media.digest,article.new_media.thumb_url,article.new_media.url)
             end
-        end
         reply_news_message(arr)
     end
 

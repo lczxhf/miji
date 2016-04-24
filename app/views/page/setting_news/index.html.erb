@@ -32,6 +32,22 @@
          reader.readAsDataURL(file);
     })
   })
+  function show_choose (obj) {
+    $("#edit").attr("target",$(obj).attr("target"))
+    $("#delete").attr("target",$(obj).attr("target"))
+    $("#choose_modal").modal("show")
+  }
+  function del_list (obj) {
+    var id = $(obj).attr("target")
+    $.post("/page/setting_news/"+id,{_method:"delete"},function(result){
+          if(result.errCode == "1"){
+              $(".new_list[target='"+id+"']").remove()
+              $("#choose_modal").modal("hide")
+          }else{
+              alert(result.errMsg)
+          }
+    },"json")
+  }
   function show_modal(is_first,obj){
     if(is_first){
       $("#content").val($("#first_content").html());
@@ -157,7 +173,7 @@
                             <ul class="list-group">
                               <li class="list-group-item new_first" onclick="show_modal(true)"><div><span id="first_title"><%=@normal_new['title']%></span><img src="<%=@normal_new.try(:img_url).try(:url) || "/images/subscribe.png"%>" class="img-thumbnail img-responsive new_img"><span id="first_content"><%=@normal_new['content']%></span><div></li>
                               <%@setting_news.each do |setting_new|%>
-                              	 <li class="list-group-item new_list" onclick="show_modal(false,this)" target="<%=setting_new.id%>"><img src="<%=setting_new.new_media.media.local_url.thumb.url%>" class="new_other pull-right"><span><%=setting_new.new_media.title%></span></li>
+                              	 <li class="list-group-item new_list" onclick="show_choose(this)" target="<%=setting_new.id%>"><img src="<%=setting_new.new_media.media.local_url.thumb.url%>" class="new_other pull-right"><span><%=setting_new.new_media.title%></span></li>
                               <%end%>
                             </ul>
                             <div class"row">
@@ -173,7 +189,34 @@
       </div>
   </div>
 
-
+<!-- 模态框（Modal）修改头条 -->
+  <div class="modal fade" id="choose_modal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+   <div class="modal-content">
+         <div class="modal-header">
+         <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               选择修改或者删除!
+            </h4>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-primary" target="0" id="edit" onclick="show_modal(false,this)">
+               修改
+            </button>
+            <button type="button" class="btn btn-danger" target="0" id="delete" onclick="del_list(this)">
+               删除
+            </button>
+         </div>
+    </div>
+</div>
+</div><!-- /.modal -->
 <!-- 模态框（Modal）修改头条 -->
   <div class="modal fade" id="first_modal" tabindex="-1" role="dialog" 
    aria-labelledby="myModalLabel" aria-hidden="true">
@@ -253,26 +296,7 @@
                             </div>
                           </div>
                         </div>
-                         <div class="col-lg-3" onclick="choose_news(this)">
-                          <div class="panel panel-info">
-                            <div class="panel-heading text-center">
-                                <h6 class="panel-title">222222</h6>
-                            </div>
-                            <div class="panel-body">
-                              <img src="../image/bg.jpg" class="img-thumbnail img-responsive">
-                            </div>
-                          </div>
-                        </div>
-                         <div class="col-lg-3" onclick="choose_news(this)">
-                          <div class="panel panel-info">
-                            <div class="panel-heading text-center">
-                                <h6 class="panel-title">33333</h6>
-                            </div>
-                            <div class="panel-body">
-                              <img src="../image/bg.jpg" class="img-thumbnail img-responsive">
-                            </div>
-                          </div>
-                        </div>
+                         
                          <div class="col-lg-3" onclick="choose_news(this)">
                           <div class="panel panel-info">
                             <div class="panel-heading text-center">
@@ -286,14 +310,6 @@
                     </div> -->
                </div>
          </div>
-        <!--  <div class="modal-footer">
-            <button type="button" class="btn btn-default" 
-               data-dismiss="modal">关闭
-            </button>
-            <button type="button" class="btn btn-danger" onclick="change_news(this)" target="true">
-               修改
-            </button>
-         </div> -->
     </div>
 </div>
 </div><!-- /.modal -->

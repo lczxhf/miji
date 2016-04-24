@@ -11,14 +11,18 @@ layout 'new_media_layout'
 	end
 
 	def create
-		setting_new = SettingNew.new
-		setting_new.shopid = params[:shopid]
-		setting_new.sangna_config_id = SangnaConfig.where(shop_id:params[:shopid]).first.id
-		setting_new.new_media_id = params[:news_id]
-		if setting_new.save
-			render plain: '{"errCode":1,"errMsg":'+setting_new.id.to_s+'}'
+		if SettingNew.where(shopid:params[:shopid]).count < 9
+			setting_new = SettingNew.new
+			setting_new.shopid = params[:shopid]
+			setting_new.sangna_config_id = SangnaConfig.where(shop_id:params[:shopid]).first.id
+			setting_new.new_media_id = params[:news_id]
+			if setting_new.save
+				render plain: '{"errCode":1,"errMsg":'+setting_new.id.to_s+'}'
+			else
+				render plain: '{"errCode":0,"errMsg":"添加失败"}'
+			end
 		else
-			render plain: '{"errCode":0,"errMsg":"添加失败"}'
+			render plain: '{"errCode":0,"errMsg":"只能添加9条"}'
 		end
 	end
 
@@ -30,5 +34,9 @@ layout 'new_media_layout'
 		else
 			render plain: '{"errCode":0,"errMsg":"修改失败"}'
 		end
+	end
+
+	def destroy
+		SettingNew.find(params[:id]).destroy!
 	end
 end
