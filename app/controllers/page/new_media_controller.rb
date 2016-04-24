@@ -13,7 +13,7 @@ class Page::NewMediaController< ApplicationController
 		@total_page = (NewMedia.where(sangna_config_id:@sangna_config[0],del:1).count/params[:page_num].to_f).ceil
 		respond_to do |format|
       		format.html # index.html.erb
-      		format.json { render json: @news}
+      		format.json { render json: @users}
     	end
 	end
 
