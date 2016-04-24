@@ -1,0 +1,286 @@
+<%content_for :head do%>
+<style type="text/css">
+  .new_first{
+    height: 250px;
+    width: 50%;
+  }
+  .new_img{
+    width: 100%;
+    height: 200px;
+  }
+  .new_other{
+    height: 100px;
+    width: 100px;
+  }
+  .new_list{
+    width: 50%;
+    height: 120px;
+    line-height:120px;
+  }
+</style>
+<script type="text/javascript">
+  $(function(){
+    $("#sidebar .nav-tabs:eq(1) li a:eq(0)").css("color","#000000");
+    $("#sidebar .nav-tabs:eq(1) li:eq(0)").addClass("bg-info");
+
+    $("#img_url").change(function(e){
+        var file = e.target.files[0]
+         var reader = new FileReader();
+         reader.onload = function(){
+            $("#preview_img").attr("src",reader.result)
+         }
+         reader.readAsDataURL(file);
+    })
+  })
+  function show_modal(is_first,obj){
+    if(is_first){
+      $("#content").val($("#first_content").html());
+      $("#title").val($("#first_title").html());
+      $("#preview_img").attr("src",$(".new_img").attr("src"))
+      $("#first_modal").modal("show");
+    }
+    else{
+        //加载图文素材
+        $("#news_content").empty();
+        $.get("/page/new_media",{shopid:<%=params[:shopid]%>,page_num:4},function(result){
+            var html = "";
+            for (var i = 0; i < result.length; i++) {
+              if (i==0){
+                html += '<div class="row-fluid">'
+              }
+              else if(i!=0 && i%4 == 0){
+                  html += '</div><div class="row-fluid">'
+              }
+              html += '<div class="col-lg-3" onclick="choose_news(this)" target="'+result[i].id+'"><div class="panel panel-info"><div class="panel-heading text-center"><h6 class="panel-title">'+result[i].title+'</h6></div><div class="panel-body"><img src="'+result[i].thumb_media.local_url.thumb.url+'" class="img-thumbnail img-responsive"></div></div></div>' 
+            };
+            $("#news_content").append(html);
+        },"json")
+        $("#news_content").attr("target",$(obj).attr("target")); 
+        $("#other_modal").modal("show");
+    }
+  }
+
+  function change_first_news(obj){
+      var title = $("#title").val();
+      var content = $("#content").val();
+      var img = $("#img_url").prop("files")[0]
+      if(title != "" && content != "" && ((img != "" && typeof(img) != "undefined") || $("#preview_img").attr("src") != "")){
+        var url = ""
+         if($(obj).attr("target")=="true"){
+            url = "/page/normal_news/<%=@normal_new.try(:id)%>/update"
+         }else{
+            url = "page/normal_news"
+         }
+           $.post(url,{title:title,content:content,img_url:img},function(obj){
+                if(obj.errCode=="1"){
+                    $("#first_content").html(content);
+                    $("#first_title").html(title)
+                    $(".new_img").attr("src",$("#preview_img").attr("src"))
+                    $("#first_modal").modal("hide");
+                    alert(obj.errMsg)
+                }else{
+                  alert(obj.errMsg)
+                }
+           },"json")
+      }else{
+          alert("请填写完整信息")
+      }
+  }
+    
+
+  function choose_news(obj){
+      var id = $(obj).attr("target");
+      var url = "" ;
+      var list_id = $("#news_content").attr("target")
+      if( list_id=="0"){
+          //添加
+          url="/page/setting_news";
+      }else{
+          url = "/page/setting_news/"+list_id+"/update"
+      }
+      var img = $(obj).children().children(".panel-body").children("img")
+      var title = $(obj).children().children().children(".panel-title")
+      $.post(url,{shopid:<%=params[:shopid]%>,news_id:id,list_id:list_id},function(result){
+          if(result.errCode == "1"){
+            if(list_id=="0"){
+              $(".list-group li:last").after('<li class="list-group-item new_list" onclick="show_modal(false,this)" target="'+result.errMsg+'"><img src="'+img.attr("src")+'" class="new_other pull-right"><span>'+title.html()+'</span></li>')
+            }else{
+              $(".list-group li[target='"+list_id+"'] img").attr("src",img.attr("src"))
+              $(".list-group li[target='"+list_id+"'] span").html(title.html())
+            }
+             $("#other_modal").modal("hide");
+          }else{
+              alert(result.errMsg)
+          }
+      },"json")
+  }
+</script>
+
+<%end%>
+<%content_for :body do%>
+ <div class="col-lg-10 col-sm-10 col-md-10">
+            <div class="well">
+              <div class="panel">
+                  <ul class="nav nav-tabs">
+                      <li class="active"><a href="#"><span class="glyphicon glyphicon-list-alt"></span>扫码回复</a></li>
+                      
+                  </ul>
+                </div>
+                <div class="panel panel-info">
+                    <div class="panel-heading text-center">
+                        <h5 class="panel-title">扫码回复的图文消息设置</h5>
+                    </div>
+                    <div class="panel-body">
+                      
+                          <!--   <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_first"></div>
+                            <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_other"></div>
+                            <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_other"></div>
+                            <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_other"></div>
+                            <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_other"></div>
+                            <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_other"></div>
+                            <div><img src="../image/bg.jpg" class="img-thumbnail img-responsive new_other"></div>
+ -->
+                            <ul class="list-group">
+                              <li class="list-group-item new_first" onclick="show_modal(true)"><div><span id="first_title"><%=@normal_new.title%></span><img src="<%=@normal_new.img_url.url%>" class="img-thumbnail img-responsive new_img"><span id="first_content"><%=@normal_new.content%></span><div></li>
+                              <%@setting_news.each do |setting_new|%>
+                              	 <li class="list-group-item new_list" onclick="show_modal(false,this)" target="<%=setting_new.id%>"><img src="<%=setting_new.new_media.media.local_url.thumb.url%>" class="new_other pull-right"><span><%=setting_new.new_media.title%></span></li>
+                              <%end%>
+                            </ul>
+                            <div class"row">
+                            <div class="col-lg-offset-1 col-lg-3 col-md-offset-1 col-md-3 col-sm-offset-1 col-sm-3">
+                            <button type="button" class="btn btn-default btn-lg center-block" onclick="show_modal(false,this)" target="0">＋</button>
+                            </div>
+                            </div>
+                      </div>
+                    </div>
+                  </div>
+            </div>
+          </div>
+      </div>
+  </div>
+
+
+<!-- 模态框（Modal）修改头条 -->
+  <div class="modal fade" id="first_modal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+   <div class="modal-content">
+         <div class="modal-header">
+         <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               编辑图文消息头条！
+            </h4>
+         </div>
+         <div class="modal-body">
+           <form class="form-horizontal" role="form">
+              <div class="form-group">
+                <label for="title" class="col-sm-2 control-label">标题</label>
+                <div class="col-sm-10">
+                   <input type="text" class="form-control" id="title" 
+            placeholder="请输入标题">
+              </div>
+              </div>
+              <div class="form-group">
+                <label for="content" class="col-sm-2 control-label">内容</label>
+                <div class="col-sm-10">
+                   <input type="text" class="form-control" id="content" 
+            placeholder="请输入内容">
+              </div>
+              </div>
+              <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">图片</label>
+                <div class="col-sm-10">
+                   <input type="file" id="img_url" accept=".jpg,.png,.jpeg,.svg"/>
+                   <img src="" id="preview_img" class="img-thumbnail img-responsive"/>
+              </div>
+              </div>
+          </form>
+
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-danger" target="true" onclick="change_first_news(this)">
+               修改
+            </button>
+         </div>
+    </div>
+</div>
+</div><!-- /.modal -->
+
+<!-- 模态框（Modal）修改列表条 -->
+  <div class="modal fade" id="other_modal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+   <div class="modal-content">
+         <div class="modal-header">
+         <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               编辑图文消息列表！
+            </h4>
+         </div>
+         <div class="modal-body">
+               <div class="container-fluid" id="news_content" target="true">
+                    <!-- <div class="row-fluid">
+                        <div class="col-lg-3" onclick="choose_news(this)" target="1">
+                          <div class="panel panel-info">
+                            <div class="panel-heading text-center">
+                                <h6 class="panel-title">11111</h6>
+                            </div>
+                            <div class="panel-body">
+                              <img src="../image/bg.jpg" class="img-thumbnail img-responsive">
+                            </div>
+                          </div>
+                        </div>
+                         <div class="col-lg-3" onclick="choose_news(this)">
+                          <div class="panel panel-info">
+                            <div class="panel-heading text-center">
+                                <h6 class="panel-title">222222</h6>
+                            </div>
+                            <div class="panel-body">
+                              <img src="../image/bg.jpg" class="img-thumbnail img-responsive">
+                            </div>
+                          </div>
+                        </div>
+                         <div class="col-lg-3" onclick="choose_news(this)">
+                          <div class="panel panel-info">
+                            <div class="panel-heading text-center">
+                                <h6 class="panel-title">33333</h6>
+                            </div>
+                            <div class="panel-body">
+                              <img src="../image/bg.jpg" class="img-thumbnail img-responsive">
+                            </div>
+                          </div>
+                        </div>
+                         <div class="col-lg-3" onclick="choose_news(this)">
+                          <div class="panel panel-info">
+                            <div class="panel-heading text-center">
+                                <h6 class="panel-title">4444</h6>
+                            </div>
+                            <div class="panel-body">
+                              <img src="../image/bg.jpg" class="img-thumbnail img-responsive">
+                            </div>
+                          </div>
+                        </div>
+                    </div> -->
+               </div>
+         </div>
+        <!--  <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-danger" onclick="change_news(this)" target="true">
+               修改
+            </button>
+         </div> -->
+    </div>
+</div>
+</div><!-- /.modal -->
+<%end%>

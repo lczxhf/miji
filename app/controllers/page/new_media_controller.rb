@@ -5,9 +5,16 @@ class Page::NewMediaController< ApplicationController
 		if params[:page].to_i <= 0
 		     params[:page] = 1
 		end
+		if params[:page_num].to_i <= 0
+			params[:page_num] = 16
+		end
 		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
-		@news = NewMedia.includes(:media,:shop_profile).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((params[:page].to_i-1)*16).limit(16)
-		@total_page = (NewMedia.where(sangna_config_id:@sangna_config[0],del:1).count/16.0).ceil
+		@news = NewMedia.includes(:media,:shop_profile).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((params[:page].to_i-1)*params[:page_num]).limit(params[:page_num])
+		@total_page = (NewMedia.where(sangna_config_id:@sangna_config[0],del:1).count/params[:page_num].to_f).ceil
+		respond_to do |format|
+      		format.html # index.html.erb
+      		format.json { render json: @news}
+    	end
 	end
 
 	def new
