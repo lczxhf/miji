@@ -204,7 +204,7 @@
               }else if(page==-1){
                 page = img_page - 1;
               }
-              $.get("/page/content_media?page="+page+"&all=new_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
+              $.get("/page/content_media?page="+page+"&all=new_media&sangna_config_id=<%=@sangna_config[0]%>&page_num=5",function(obj){
                           $("#img_side .lzh").remove();
                           for(x in obj){
                             $("#img_side").children('ul').before('<div class="row lzh"><div class="col-lg-12" style="word-wrap:break-word"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive"/><p class="text-justify">'+obj[x]['wechat_url']+'</p></div></div>')
@@ -227,7 +227,7 @@
               }else if(page==-1){
                 page = main_img_page - 1;
               }
-              $.get("/page/media?page="+page+"&m_type=news_media&sangna_config_id=<%=@sangna_config[0]%>",function(obj){
+              $.get("/page/media?page="+page+"&m_type=news_media&sangna_config_id=<%=@sangna_config[0]%>&page_num=5",function(obj){
                             $("#main_img_side .lzh").remove();
                             for(x in obj){
                                 $("#main_img_side").children('ul').before('<div class="row lzh"><div class="col-lg-12"><img src="'+obj[x]['local_url']['url']+'" class="img-thumbnail img-responsive" target="'+obj[x]['media_id']+'"/><button type="button" class="btn btn-default center-block" onclick="choose_main_img(this)">选择</button></div></div>')

@@ -1,4 +1,6 @@
 class Page::ContentMediaController < ApplicationController
+layout 'new_media_layout'
+
 	def create
 		puts params
 		sangna_config = SangnaConfig.find_by_appid(params[:appid])
@@ -21,7 +23,10 @@ class Page::ContentMediaController < ApplicationController
 		     params[:page] = 1
 		end
 		if params[:page_num].to_i <= 0
-			params[:page_num] = 4
+			params[:page_num] = 12
+		end
+		if !params[:sangna_config_id]
+                        params[:sangna_config_id] = SangnaConfig.find_by_shop_id(params[:shopid]).id
 		end
 	    if params[:m_type]=="all"
 		@media = ContentMedia.where(sangna_config_id:params[:sangna_config_id]).order(upadted_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:wechat_url,:id)

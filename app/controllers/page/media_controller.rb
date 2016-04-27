@@ -1,4 +1,6 @@
 class Page::MediaController < ApplicationController
+layout 'new_media_layout'
+
 	def create
 		puts params
 		sangna_config = SangnaConfig.find_by_appid(params[:appid])
@@ -23,12 +25,15 @@ class Page::MediaController < ApplicationController
 		     params[:page] = 1
 		end
 		if params[:page_num].to_i <= 0
-			params[:page_num] = 4
+			params[:page_num] = 12
 		end
-		if params[:m_type] == "all"
-		media = Media.where(sangna_config_id:params[:sangna_config_id]).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:media_id,:id)	
+		if !params[:sangna_config_id]
+			params[:sangna_config_id] = SangnaConfig.find_by_shop_id(params[:shopid]).id
+		end
+		if params[:m_type] = "all"
+		@media = Media.where(sangna_config_id:params[:sangna_config_id]).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:media_id,:id)	
 		else
-		media =	Media.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:media_id,:id)	
+		@media = Media.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:media_id,:id)	
 		end
 		respond_to do |format|
 	    	format.html
@@ -38,7 +43,8 @@ class Page::MediaController < ApplicationController
 
 	def destroy
 		media = Media.find(params[:id])
-		if media.destroy
+		media.del = 2
+		if media.save
 			render plain: %{{"errCode":1,"errMsg":"success"}}
 		else
 			render plain: %{{"errCode":0,"errMsg":"failure"}}

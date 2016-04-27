@@ -16,8 +16,8 @@
     function del_img(obj){
         $.post("/page/content_media/"+$(obj).attr('target'),{_method:'delete'},function(result){
               if(result.errCode=='1'){
-                  $(obj).parent().remove();
-                  $("del_modal").modal('hide')
+ $(".img-responsive[target='"+$(obj).attr('target')+"']").remove();
+                  $("#del_modal").modal('hide')
               }else{
                   alert(result.errMsg)
               }
@@ -30,13 +30,12 @@
       			<div class="well">
       				<div class="panel">
             			<ul class="nav nav-tabs">
-              				<li class="active"><a href="#"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
-              				<li class=""><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
+              				<li class="active"><a href="#"><span class="glyphicon glyphicon-list-alt"></span>内容图片列表</a></li>
             			</ul>
             		</div>
             		<div class="panel panel-info">
                			<div class="panel-heading text-center">
-                  			<h5 class="panel-title">图文素材列表</h5>
+                  			<h5 class="panel-title">内容图片素材列表</h5>
                			</div>
                			<div class="panel-body">
                				<%@media.each_with_index do |media,index|%>
