@@ -19,11 +19,29 @@ class Page::MediaController < ApplicationController
 	end
 
 	def index
-		if params[:m_type] == "all"
-		media = Media.where(sangna_config_id:params[:sangna_config_id]).order(updated_at: :desc).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:media_id,:id)	
-		else
-		media =	Media.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:media_id,:id)	
+		if params[:page].to_i <= 0
+		     params[:page] = 1
 		end
-		render plain: media.to_json
+		if params[:page_num].to_i <= 0
+			params[:page_num] = 4
+		end
+		if params[:m_type] == "all"
+		media = Media.where(sangna_config_id:params[:sangna_config_id]).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:media_id,:id)	
+		else
+		media =	Media.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:media_id,:id)	
+		end
+		respond_to do |format|
+	    	format.html
+	    	format.json {render json: @media}
+	    end
+	end
+
+	def destroy
+		media = Media.find(params[:id])
+		if media.destroy
+			render plain: %{{"errCode":1,"errMsg":"success"}}
+		else
+			render plain: %{{"errCode":0,"errMsg":"failure"}}
+		end
 	end
 end

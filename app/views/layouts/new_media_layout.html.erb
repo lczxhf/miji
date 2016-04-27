@@ -62,7 +62,8 @@
             <ul class="nav nav-pills nav-stacked">
                <li class=""><a><span class="glyphicon glyphicon-picture"></span> 素材管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>
                <ul class="nav nav-tabs nav-stacked">
-                  <li><a href="#">图片</a></li>
+                  <li><a href="/page/media?shopid=<%=params[:shopid]%>">图片</a></li>
+                  <li><a href="/page/content_media?shopid=<%=params[:shopid]%>">内容图片</a></li>
                   <li><a href="/page/new_media?shopid=<%=params[:shopid]%>">图文</a></li>
                </ul>
                <li class=""><a><span class="glyphicon glyphicon-cog"></span> 设置管理<span class="glyphicon glyphicon-align-justify pull-right"></span></a></li>

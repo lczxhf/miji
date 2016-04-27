@@ -6,8 +6,8 @@
     $(function() { 
       // $("[data-toggle='tooltip']").tooltip({html: true}); 
       // $("[data-toggle='tooltip']").tooltip('show'); 
-      $("#sidebar .nav-tabs li a").eq(1).css("color","#000000")
-      $("#sidebar .nav-tabs:eq(0) li:eq(1)").addClass("bg-info")
+      $("#sidebar .nav-tabs li a").eq(2).css("color","#000000")
+      $("#sidebar .nav-tabs:eq(0) li:eq(2)").addClass("bg-info")
     });
     function del_news(obj){
 	$.post("/page/new_media/"+$(obj).attr("target"),{_method:"delete"},function(result){

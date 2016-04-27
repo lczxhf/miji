@@ -1,0 +1,97 @@
+<%content_for :head do%>
+<script type="text/javascript">
+    
+      
+    $(function () { 
+      $("#sidebar .nav-tabs:eq(0) li a:eq(1)").css("color","#000000");
+    $("#sidebar .nav-tabs:eq(0) li:eq(1)").addClass("bg-info");
+    })
+
+    function show_modal(obj){
+     
+      $("#del_modal .btn-danger").attr('target',$(obj).attr('target'))
+      $("#del_modal").modal('show')
+    }
+
+    function del_img(obj){
+        $.post("/page/content_media/"+$(obj).attr('target'),{_method:'delete'},function(result){
+              if(result.errCode=='1'){
+                  $(obj).parent().remove();
+                  $("del_modal").modal('hide')
+              }else{
+                  alert(result.errMsg)
+              }
+        },'json')
+    }
+  </script>
+<%end%>
+<%content_for :body do%>
+<div class="col-lg-10 col-sm-10 col-md-10">
+      			<div class="well">
+      				<div class="panel">
+            			<ul class="nav nav-tabs">
+              				<li class="active"><a href="#"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
+              				<li class=""><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
+            			</ul>
+            		</div>
+            		<div class="panel panel-info">
+               			<div class="panel-heading text-center">
+                  			<h5 class="panel-title">图文素材列表</h5>
+               			</div>
+               			<div class="panel-body">
+               				<%@media.each_with_index do |media,index|%>
+                      <%if index == 0%>
+                        <div class="row">
+                      <%elsif index%4 == 0%>
+                        </div>
+                        <div class="row">
+                      <%end%>
+                      <div class="col-lg-3">
+                            <img src="<%=media.local_url.thumb.url%>" class="img-thumbnail img-responsive" target="<%=media.id%>" onclick="show_modal(this)" />
+                         </div>
+                    <%end%>
+               					<!-- <div class="row-fluid">
+      		   						<div class="col-lg-4 col-lg-offset-4">
+    									<ul class="pagination">
+  										<li><a href="#">&laquo;</a></li>
+  										<li class="active"><a href="#">1</a></li>
+  										<li class="disabled"><a href="#">2</a></li>
+  										<li><a href="#">3</a></li>
+  										<li><a href="#">4</a></li>
+  										<li><a href="#">5</a></li>
+  										<li><a href="#">&raquo;</a></li>
+										</ul>
+									</div>
+    							</div> -->
+               				</div>
+               			</div>
+               		</div>
+      			</div>
+      		</div>
+
+      		<!-- 模态框（Modal） -->
+  <div class="modal fade" id="del_modal" tabindex="-1" role="dialog" 
+   aria-labelledby="myModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+      <div class="modal-content">
+         <div class="modal-header">
+            <button type="button" class="close" 
+               data-dismiss="modal" aria-hidden="true">
+                  &times;
+            </button>
+            <h4 class="modal-title" id="myModalLabel">
+               是否确认删除！
+            </h4>
+         </div>
+         <div class="modal-footer">
+            <button type="button" class="btn btn-default" 
+               data-dismiss="modal">关闭
+            </button>
+            <button type="button" class="btn btn-danger" target="0" onclick="del_img(this)">
+               删除
+            </button>
+         </div>
+      </div><!-- /.modal-content -->
+</div><!-- /.modal -->
+</div>
+<%end%>

@@ -17,11 +17,29 @@ class Page::ContentMediaController < ApplicationController
 	end
 
 	def index
+		if params[:page].to_i <= 0
+		     params[:page] = 1
+		end
+		if params[:page_num].to_i <= 0
+			params[:page_num] = 4
+		end
 	    if params[:m_type]=="all"
-		media = ContentMedia.where(sangna_config_id:params[:sangna_config_id]).order(upadted_at: :desc).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:wechat_url,:id)
+		@media = ContentMedia.where(sangna_config_id:params[:sangna_config_id]).order(upadted_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:wechat_url,:id)
 	    else
-		media = ContentMedia.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*5).limit(5).select(:local_url,:wechat_url,:id)
+		@media = ContentMedia.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:wechat_url,:id)
 	    end
-		render plain: media.to_json
+	    respond_to do |format|
+	    	format.html
+	    	format.json {render json: @media}
+	    end
+	end
+
+	def destroy
+		media = ContentMedia.find(params[:id])
+		if media.destroy
+			render plain: %{{"errCode":1,"errMsg":"success"}}
+		else
+			render plain: %{{"errCode":0,"errMsg":"failure"}}
+		end
 	end
 end
