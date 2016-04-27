@@ -12,6 +12,7 @@ namespace :api do
   post "third_party/receive" => "third_party#receive"
   get "third_party/auth_code" => "third_party#auth_code"
   get "third_party/oauth2" => "third_party#oauth2"
+  get "third_party/authorize" => "third_party#authorize"
   post 'message/:appid' => "message#receive"
 
   post 'backrequire/get_user_info' => 'backrequire#get_user_info'

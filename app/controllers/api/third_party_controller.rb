@@ -53,4 +53,16 @@ class Api::ThirdPartyController < ApplicationController
 			end
 		end		
 	end
+
+	def authorize
+		if params[:appid]
+			gzh=SangnaConfig.where(appid:params[:appid]).first
+			url="https://api.weixin.qq.com/sns/oauth2/component/access_token?appid=#{gzh.appid}&code=#{params[:code]}&grant_type=authorization_code&component_appid=#{APPID}&component_access_token="+ThirdParty.get_access_token
+      			result=JSON.parse(ThirdParty.get_to_wechat(url))
+			if result["openid"]
+				url = "http://mijiclub.com/weixin/share/redEnvelope.php?sid=#{params[:sid]}&openid=#{result['openid']}"
+				redirect_to url
+			end
+		end
+	end
 end
