@@ -31,7 +31,8 @@ layout 'new_media_layout'
 	    if params[:m_type]=="all"
 		@media = ContentMedia.where(sangna_config_id:params[:sangna_config_id]).order(upadted_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:wechat_url,:id)
 	    else
-		@media = ContentMedia.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:wechat_url,:id)
+		#@media = ContentMedia.where(sangna_config_id:params[:sangna_config_id],del:1).order(updated_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num]).select(:local_url,:wechat_url,:id)
+		@media = ContentMedia.where(sangna_config_id:params[:sangna_config_id]).order(updated_at: :desc).page(params[:page]).per(params[:page_num])
 	    end
 	    respond_to do |format|
 	    	format.html

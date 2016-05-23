@@ -241,6 +241,7 @@ DEPENDENCIES
   hiredis
   jbuilder (~> 2.0)
   jquery-rails
+  kaminari
   mini_magick
   multipart-post
   mysql2 (>= 0.3.13, < 0.5)

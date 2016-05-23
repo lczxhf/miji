@@ -48,7 +48,15 @@
                				<div class="col-lg-3">
                           	<img src="<%=media.local_url.thumb.url%>" class="img-thumbnail img-responsive" target="<%=media.id%>" onclick="show_modal(this)" />
                      		 </div>
+				<%if index == @media.length-1%>
+					</div>
+				<%end%>
                			<%end%>
+				<div class="row-fluid">
+                                                        <div class="col-lg-4 col-lg-offset-4">
+                                                                <%=paginate @media%>
+                                                        </div>
+                                                </div>
                					<!-- <div class="row-fluid">
       		   						<div class="col-lg-4 col-lg-offset-4">
     									<ul class="pagination">

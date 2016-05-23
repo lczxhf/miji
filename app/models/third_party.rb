@@ -64,7 +64,7 @@ class ThirdParty
   end
 
   def self.authorize(auth_code)
-      url='https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token='+Rails.cache.read(:access_token)
+      url='https://api.weixin.qq.com/cgi-bin/component/api_query_auth?component_access_token='+get_access_token
       body='{"component_appid":"'+APPID+'","authorization_code":"'+auth_code+'"}'
       result=ThirdParty.sent_to_wechat(url,body)
       puts result
