@@ -8,7 +8,7 @@ class Page::NewMediaController< Page::ApplicationController
 			params[:page_num] = 16
 		end
 		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
-		@news = NewMedia.includes(:media,:shop_profile).where(sangna_config_id:@sangna_config[0],del:1).order(created_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num])
+		@news = NewMedia.includes(:media,:shop_profile).where(sangna_config_id:@sangna_config[0],del:1,n_type:1).order(created_at: :desc).offset((params[:page].to_i-1)*params[:page_num].to_i).limit(params[:page_num])
 		@total_page = (NewMedia.where(sangna_config_id:@sangna_config[0],del:1).count/params[:page_num].to_f).ceil
 		respond_to do |format|
       		format.html # index.html.erb
@@ -145,14 +145,15 @@ class Page::NewMediaController< Page::ApplicationController
 
 	def sync
 		sangna_config = SangnaConfig.where(shop_id:params[:shopid]).first	
+		NewMedia.where(sangna_config_id:sangna_config.id).update_all(del:2)
 		sync_result = 'failure'
 		if sangna_config
 		    result = JSON.parse Sangna.get_media_list(sangna_config.token,'news','0','20')
 		    if result['total_count'] == result['item_count']	
 			result['item'].each do |item|
 			    if NewMedia.where(sangna_config_id:sangna_config.id,thumb_media_id:item['media_id']).where("UNIX_TIMESTAMP(updated_at) - "+item['content']['update_time'].to_s+" < -100").empty?
-				item['content']['news_item'].each do |news|
-				    new_media = NewMedia.find_or_initialize_by(thumb_media_id:item['media_id'],show_cover_pic:news['show_cover_pic'],sangna_config_id:sangna_config.id)
+				item['content']['news_item'].each_with_index do |news,index|
+				    new_media = NewMedia.find_or_initialize_by(thumb_media_id:item['media_id'],n_type:index+1,sangna_config_id:sangna_config.id)
 				    new_media.title = news['title']
 				    new_media.author = news['author']
 				    new_media.digest = news['digest']

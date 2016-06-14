@@ -1,12 +1,11 @@
 <%content_for :head do%>
-
 <script type="text/javascript">
     var news_page = <%=params[:page]%>;
       
     $(function() { 
       // $("[data-toggle='tooltip']").tooltip({html: true}); 
       // $("[data-toggle='tooltip']").tooltip('show'); 
-      $("#sidebar .nav-tabs li a").eq(2).css("color","#000000")
+ 	      $("#sidebar .nav-tabs li a").eq(2).css("color","#000000")
       $("#sidebar .nav-tabs:eq(0) li:eq(2)").addClass("bg-info")
 	$("#tongbu").click(function(){
 		$.post("/page/new_media/sync?shopid=<%=params[:shopid]%>",{},function(obj){
@@ -15,6 +14,7 @@
 			}
 		})
 	})
+
     });
     function del_news(obj){
 	$.post("/page/new_media/"+$(obj).attr("target"),{_method:"delete"},function(result){
@@ -110,6 +110,9 @@
                									</div>
                									<div class="panel-body">
                										<img src="<%=my_new.media.local_url.thumb.url%>" class="img-thumbnail img-responsive">
+											<%my_new.sub_media.each do |sub_m|%>
+               											<img src="<%=sub_m.media.local_url.thumb.url%>" class="img-thumbnail img-responsive sub_media">
+											<%end%>
                										<div class="btn-group btn-group-sm pull-right" target="<%=my_new.id%>">
                											
                						
@@ -203,4 +206,13 @@
       </div><!-- /.modal-content -->
 </div><!-- /.modal -->
 </div>
+<script>
+$(function(){
+	$(".sub_media").each(function(){
+		$(this).css("height",parseInt($(this).parent().children(":first").css("height"))/2+"px")
+		$(this).css("width",$(this).parent().children(":first").css("width"))
+	})
+
+})
+</script>
 <%end%>
