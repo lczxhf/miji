@@ -25,7 +25,9 @@ namespace :api do
 end
 
 namespace :page do
-  resources :new_media
+  resources :new_media do
+	post :sync, on: :collection
+  end
   resources :content_media
   resources :media
   resources :setting_news

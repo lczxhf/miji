@@ -19,14 +19,27 @@
 	   #main_img_preview{
 	      max-height: 200px;
 	   }
+	   #flush_content{
+	      line-height: 20px;
+	  }
          </style>
          <script type="text/javascript">
            var img_page = 1;
            var main_img_page = 1;
             $(function(){
-               $('#content').cleditor();
+		var o = $("#content").cleditor()[0];
+		$('#content').html("<%=@media.content%>")
+		o.updateFrame();
+		$("#main_img_ok").removeClass('hidden')
+                $("#main_img_non").addClass("hidden")
+                $("#media_id").val('<%=@media.media.media_id%>')
 		$("#sidebar .nav-tabs li a").eq(2).css("color","#000000")
     $("#sidebar .nav-tabs:eq(0) li:eq(2)").addClass("bg-info")
+
+		$("#flush_content").click(function(){
+                	$('#content').html("")
+			o.updateFrame();
+		})
                $('#show_main_img_box').click(function(){
                   show_hide_main_img_side('show')
                   show_hide_img_side('hidden')
@@ -43,7 +56,7 @@
                           var content = $('#content').val();
                           var shopid = $("#shopid option:selected").val();
                           if(check_form(title,author,media_id,digest,content,shopid)){
-                              $.post("/page/new_media",{title:title,author:author,media_id:media_id,digest:digest,content:content,shopid:shopid,appid:'<%=@sangna_config[1]%>',is_cover:'0',url:'http://mijiclub.com'},function(obj){
+                              $.post("/page/new_media/<%=@media.id%>",{_method:'put',title:title,author:author,media_id:media_id,digest:digest,content:content,shopid:shopid,appid:'<%=@sangna_config[1]%>',is_cover:'0',url:'http://mijiclub.com'},function(obj){
                                     $("#my_alert").removeClass("hide")
                                     $($("#my_alert").children()[1]).html(obj)
                                     window.scrollTo(0,0)
@@ -263,31 +276,31 @@
            <div class="panel">
             <ul class="nav nav-tabs">
               <li class=""><a href="/page/new_media?shopid=<%=params[:shopid]%>"><span class="glyphicon glyphicon-list-alt"></span>图文列表</a></li>
-              <li class="active"><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>添加图文</a></li>
+              <li class="active"><a href="#"><span class="glyphicon glyphicon-plus-sign"></span>修改图文</a></li>
             </ul>
             </div>
             <div class="panel panel-info">
                <div class="panel-heading text-center">
-                  <h5 class="panel-title">添加图文素材</h5>
+                  <h5 class="panel-title">修改图文素材</h5>
                </div>
                <div class="panel-body">
                   <form class="form-horizontal" role="form" id="news_form">
                    <div class="form-group">
                         <label for="title" class="col-sm-2 control-label">标题</label>
                         <div class="col-sm-10">
-                           <input type="text" class="form-control" id="title" name="title" placeholder="请输入标题">
+                           <input type="text" class="form-control" id="title" name="title" placeholder="请输入标题" value="<%=@media.title%>">
                         </div>
                    </div>
                   <div class="form-group">
                        <label for="author" class="col-sm-2 control-label">作者</label>
                      <div class="col-sm-10">
-                         <input type="text" class="form-control" id="author" name="author" placeholder="请输入作者">
+                         <input type="text" class="form-control" id="author" name="author" placeholder="请输入作者" value="<%=@media.author%>">
                    </div>
                   </div>
                   <div class="form-group">
                        <label for="digest" class="col-sm-2 control-label">介绍</label>
                      <div class="col-sm-10">
-                         <input type="text" class="form-control" id="digest" name="digest" placeholder="请输入介绍">
+                         <input type="text" class="form-control" id="digest" name="digest" placeholder="请输入介绍" value="<%=@media.digest%>">
                    </div>
                   </div>
                   <div class="form-group">
@@ -295,7 +308,7 @@
                        <div class="col-sm-10 col-md-10 col-lg-10">
                         <select class="form-control" name="shopid" id="shopid">
                         	<%@shop.each do |shop|%>
-                        		<option value='<%=shop[0]%>'><%=shop[1]%></option>
+                        		<option value='<%=shop[0]%>' selected="<%=shop[0] == @media.shopid ? 'selected' : ''%>"><%=shop[1]%></option>
                         	<%end%>
                         </select>
                         </div>
@@ -307,7 +320,7 @@
                          <button type="button" class="btn btn-info" id="show_main_img_box">选择</button>
                          <span class="text-danger" id="main_img_non"><span class="glyphicon glyphicon-remove"></span>未选择</span>
                          <span class="text-success hidden" id="main_img_ok"><span class="glyphicon glyphicon-ok"></span>已选择</span>
-                         <img src="" class="img-responsive" id="main_img_preview"/>
+                         <img src="<%=@media.media.local_url.thumb.url%>" class="img-responsive" id="main_img_preview"/>
                    </div>
                   </div>
                   <div class="form-group">
@@ -332,6 +345,7 @@
 
                   <div class="form-group">
                      <div class="col-sm-offset-6 col-sm-6">
+ 		     <a href="javascript:void(0)" id="flush_content">清空内容</a>
                         <button type="button" class="btn btn-primary" id="submit_news">提交</button>
                      </div>
                   </div>

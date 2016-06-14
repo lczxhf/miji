@@ -69,7 +69,7 @@ class WEvent
             GetCoupon.perform_async(@weixin_message.FromUserName,str,@sangna_config.shop_id)
             SettingNew.includes(:new_media).where(sangna_config_id:@sangna_config.id).each do |article|
                 # add other articles
-                arr << generate_article(article.new_media.title,article.new_media.digest,article.new_media.thumb_url,article.new_media.url)
+                arr << generate_article(article.new_media.title,article.new_media.digest,'http://callback.mijiclub.com'+article.new_media.media.local_url.thumb.url,article.new_media.url)
             end
         reply_news_message(arr)
     end

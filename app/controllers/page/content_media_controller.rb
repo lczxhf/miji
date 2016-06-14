@@ -1,6 +1,4 @@
-class Page::ContentMediaController < ApplicationController
-layout 'new_media_layout'
-
+class Page::ContentMediaController < Page::ApplicationController
 	def create
 		puts params
 		sangna_config = SangnaConfig.find_by_appid(params[:appid])

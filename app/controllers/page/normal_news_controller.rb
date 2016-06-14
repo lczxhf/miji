@@ -1,4 +1,4 @@
-class Page::NormalNewsController < ApplicationController
+class Page::NormalNewsController < Page::ApplicationController
 	def create
 		normal_new = NormalNew.new
 		if insert_data(normal_new)

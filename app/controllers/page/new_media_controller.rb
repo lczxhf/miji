@@ -1,5 +1,4 @@
-class Page::NewMediaController< ApplicationController
-	layout 'new_media_layout'
+class Page::NewMediaController< Page::ApplicationController
 	before_action :check,only: [:index,:new,:create]
 	def index
 		if params[:page].to_i <= 0
@@ -23,6 +22,55 @@ class Page::NewMediaController< ApplicationController
 		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
 		@page = [Media.where(del:1,sangna_config_id:@sangna_config[0]).count,ContentMedia.where(del:1,sangna_config_id:@sangna_config[0]).count]
 		@page.collect! {|a| (a/5.0).ceil}
+	end
+
+	def edit
+		ids = ShopSubRelation.where(shopid:params[:shopid],freeze:0).pluck(:subid)
+		@shop = ShopProfile.where(shopid:ids).pluck(:shopid,:shopname)
+		@sangna_config= SangnaConfig.where(shop_id:params[:shopid]).pluck(:id,:appid).first
+		@page = [Media.where(del:1,sangna_config_id:@sangna_config[0]).count,ContentMedia.where(del:1,sangna_config_id:@sangna_config[0]).count]
+		@page.collect! {|a| (a/5.0).ceil}
+		@media = NewMedia.find(params[:id])
+	end
+
+	def update
+		new_media = NewMedia.find(params[:id])
+		appid = params[:appid]
+		shopid = params[:shopid]
+		sangna_config = SangnaConfig.find_by_appid(params[:appid])
+		params.delete(:appid)
+		params.delete(:shopid)
+		params.delete(:controller)
+		params.delete(:action)
+  	 	params.delete("_method")
+   		params.delete("id")
+		result = JSON.parse(Sangna.update_news(sangna_config.token,new_media.thumb_media_id,'0',params))
+		if result['errcode'] == 0
+			media = JSON.parse(Sangna.get_or_del_forever_media(sangna_config.token,new_media.thumb_media_id))
+			if media
+				#NewMedia.where(n_type:1,shopid:shopid).update_all(n_type:2)
+				new_media.title = params[:title]
+				new_media.thumb_url = media['news_item'][0]['thumb_url']
+				new_media.show_cover_pic = params[:is_cover]
+				new_media.author = params[:author]
+				new_media.digest = params[:digest]
+				new_media.content = params[:content]
+				new_media.url = media['news_item'][0]['url']
+				new_media.content_source_url = params[:url]
+				new_media.shopid = shopid || 0
+				new_media.media_id = Media.find_by_media_id(params[:media_id]).id
+				if new_media.save
+					render plain: '修改成功'
+				else
+					render plain: 'save failure'
+				end
+			else
+				render plain: 'get failure'
+			end
+		else
+			render plain: 'failure'
+		end
+
 	end
 
 	def create
@@ -54,7 +102,7 @@ class Page::NewMediaController< ApplicationController
 				new_media.media_id = Media.find_by_media_id(params[:media_id]).id
 				new_media.sangna_config_id = sangna_config.id
 				if new_media.save
-					render plain: 'success'
+					render plain: '添加成功'
 				else
 					render plain: 'save failure'
 				end
@@ -94,6 +142,44 @@ class Page::NewMediaController< ApplicationController
 		end
 	end
 
+
+	def sync
+		sangna_config = SangnaConfig.where(shop_id:params[:shopid]).first	
+		sync_result = 'failure'
+		if sangna_config
+		    result = JSON.parse Sangna.get_media_list(sangna_config.token,'news','0','20')
+		    if result['total_count'] == result['item_count']	
+			result['item'].each do |item|
+			    if NewMedia.where(sangna_config_id:sangna_config.id,thumb_media_id:item['media_id']).where("UNIX_TIMESTAMP(updated_at) - "+item['content']['update_time'].to_s+" < -100").empty?
+				item['content']['news_item'].each do |news|
+				    new_media = NewMedia.find_or_initialize_by(thumb_media_id:item['media_id'],show_cover_pic:news['show_cover_pic'],sangna_config_id:sangna_config.id)
+				    new_media.title = news['title']
+				    new_media.author = news['author']
+				    new_media.digest = news['digest']
+				    new_media.content = news['content']
+				    new_media.url = news['url']
+				    new_media.content_source_url = news['content_source_url']
+				    new_media.shopid = params[:shopid]
+				    new_media.del = 1
+				    media = Media.find_or_initialize_by(media_id:news['thumb_media_id'],m_type:'image',sangna_config_id:sangna_config.id)
+				    if media.id.nil?
+					img = MiniMagick::Image.read Sangna.get_or_del_forever_media(sangna_config.token,news['thumb_media_id'])
+					img.format 'png'
+					media.local_url = img
+					media.del = 1
+					media.save!
+				    end
+				    new_media.media_id = media.id
+				    if new_media.save
+					sync_result = 'success'
+				    end 
+				end
+			    end
+			end
+		    end
+		end
+		render plain: sync_result	
+	end
 	def check
 		shop_member = ShopMember.find(params[:shopid])
 		if !shop_member.auth

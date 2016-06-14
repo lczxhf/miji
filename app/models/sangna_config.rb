@@ -1,7 +1,7 @@
 class SangnaConfig < ActiveRecord::Base
 	has_many :customer_lists
 	has_one :normal_new,-> {where(del:1)}
-
+	default_scope {where(del:1)}	
 	after_find :check_token_expire
 
 	def self.generate_config(json,id)

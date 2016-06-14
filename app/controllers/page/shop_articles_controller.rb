@@ -1,4 +1,4 @@
-class Page::ShopArticlesController < ApplicationController
+class Page::ShopArticlesController < Page::ApplicationController
 	def index
 		@articles = ShopArticle.where(shop_member_id:params[:shopid])
 	end

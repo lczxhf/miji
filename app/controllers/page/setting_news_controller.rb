@@ -1,5 +1,4 @@
-class Page::SettingNewsController < ApplicationController
-layout 'new_media_layout'
+class Page::SettingNewsController < Page::ApplicationController
 	def index
 		@normal_new = NormalNew.where(shopid:params[:shopid],del:1).first
 		if @normal_new.nil?

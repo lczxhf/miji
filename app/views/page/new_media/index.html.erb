@@ -8,6 +8,13 @@
       // $("[data-toggle='tooltip']").tooltip('show'); 
       $("#sidebar .nav-tabs li a").eq(2).css("color","#000000")
       $("#sidebar .nav-tabs:eq(0) li:eq(2)").addClass("bg-info")
+	$("#tongbu").click(function(){
+		$.post("/page/new_media/sync?shopid=<%=params[:shopid]%>",{},function(obj){
+			if(obj=='success'){
+				window.location.reload();
+			}
+		})
+	})
     });
     function del_news(obj){
 	$.post("/page/new_media/"+$(obj).attr("target"),{_method:"delete"},function(result){
@@ -18,6 +25,10 @@
 		alert(result['errMsg'])	
 	},'json')
     }
+
+   function show_edit_page(obj){
+           window.location.href = "new_media/"+$(obj).parent().attr('target')+"/edit?shopid=<%=params[:shopid]%>"
+   }
     // function set_normal_news(obj){
     //   update_normal_news("add",$(obj).attr("target"),$(obj).parent().attr("target"),function(result){
     //   		if(result['errCode']=="1"){
@@ -80,7 +91,7 @@
             		</div>
             		<div class="panel panel-info">
                			<div class="panel-heading text-center">
-                  			<h5 class="panel-title">图文素材列表</h5>
+                  			<h5 class="panel-title">图文素材列表<button class="btn btn-primary pull-right"id="tongbu">同步</button></h5>
                			</div>
                			<div class="panel-body">
                				
@@ -102,7 +113,7 @@
                										<div class="btn-group btn-group-sm pull-right" target="<%=my_new.id%>">
                											
                						
-               											<button type="button" class="btn btn-info btn-sm"><span class="glyphicon glyphicon-cog"></span></button>
+               											<button type="button" class="btn btn-info btn-sm" onclick='show_edit_page(this)'><span class="glyphicon glyphicon-cog"></span></button>
                											<button type="button" class="btn btn-danger btn-sm" onclick="show_modal(this)"><span class="glyphicon glyphicon-trash"></span></button>
                										</div>
                									</div>
